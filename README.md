@@ -1,4 +1,4 @@
-# the_eco_club
+# THE ECO CLUB: QR EARTH APP
 
 A new Flutter project.
 
