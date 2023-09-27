@@ -22,7 +22,7 @@ class _ScannerSuccessPageState extends State<ScannerSuccessPage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Text("Scanner Success Page"),
+      body: Center(child: Text("Success!")),
     );
   }
 
