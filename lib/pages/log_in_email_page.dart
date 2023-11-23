@@ -41,9 +41,10 @@ class LoginEmailPage extends StatefulWidget {
 class _LoginEmailPageState extends State<LoginEmailPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final _emailLoginFormKey = GlobalKey<FormState>();
   bool _showPassword = false;
   bool _isLoading = false;
+  // reponse status
   bool _userNotFound = false;
   bool _wrongPassword = false;
 
@@ -54,7 +55,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
         child: Stack(
           children: [
             Form(
-              key: _formKey,
+              key: _emailLoginFormKey,
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: Column(
@@ -165,9 +166,10 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
   }
 
   void _login() async {
-    if (_formKey.currentState!.validate()) {
-      _isLoading = true;
-      setState(() {});
+    if (_emailLoginFormKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
       final response = await http.get(Uri.parse(
           '$BASEURL/get/user/by/email/?email=${_emailController.text}&hashed_password=${_passwordController.text}'));
 
@@ -183,22 +185,18 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
         context.go('/home');
       } else if (response.statusCode == 404) {
         // User not found
-        _userNotFound = true;
-        _isLoading = false;
-        setState(() {});
-        _formKey.currentState!.validate();
+        setState(() {
+          _userNotFound = true;
+          _isLoading = false;
+        });
       } else if (response.statusCode == 401) {
         // Wrong password
-        _wrongPassword = true;
-        _isLoading = false;
-        setState(() {});
-        _formKey.currentState!.validate();
+        setState(() {
+          _wrongPassword = true;
+          _isLoading = false;
+        });
       }
-      // Future.delayed(const Duration(seconds: 2), () {
-      //   _isLoading = false;
-      //   setState(() {});
-      //   context.go('/home');
-      // });
+      _emailLoginFormKey.currentState!.validate();
     }
   }
 }

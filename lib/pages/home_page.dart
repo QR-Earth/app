@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 10.0),
                       Text(
                         USER.username,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.lightGreen,
                           letterSpacing: 2.0,
                           fontSize: 28.0,
@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 10.0),
                       Text(
                         USER.codes_count.toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.lightGreen,
                           letterSpacing: 2.0,
                           fontSize: 28.0,

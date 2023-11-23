@@ -21,3 +21,27 @@ class User {
     created_at = json['created_at'];
   }
 }
+
+class Leaderboard {
+  late String username;
+  late int codes_count;
+
+  static fromJson(Map<String, dynamic> json) {
+    Leaderboard l = Leaderboard();
+    l.username = json['username'];
+    l.codes_count = json['codes_count'];
+    return l;
+  }
+}
+
+class UserHistory {
+  late String id;
+  late String redeemed_at;
+
+  static fromJson(Map<String, dynamic> json) {
+    UserHistory uh = UserHistory();
+    uh.id = json['id'];
+    uh.redeemed_at = json['redeemed_at'];
+    return uh;
+  }
+}

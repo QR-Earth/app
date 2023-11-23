@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:the_eco_club/utils/constants.dart';
 
 extension ExtString on String {
   bool get isValidEmail {
@@ -52,13 +56,21 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _showPassword = false;
   bool _showConfirmPassword = false;
   bool _isLoading = false;
+  // reponse status
+  bool _usernameAlreadyRegistered = false;
+  bool _emailAlreadyRegistered = false;
+  bool _phoneAlreadyRegistered = false;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     _usernameController.text = widget.username ?? '';
     _emailController.text = widget.email ?? '';
     _phoneController.text = widget.phone ?? '';
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Stack(
@@ -82,7 +94,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       const SizedBox(height: 10),
                       TextFormField(
                         controller: _usernameController,
-                        // initialValue: widget.username,
                         keyboardType: TextInputType.text,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -101,13 +112,16 @@ class _SignUpPageState extends State<SignUpPage> {
                           if (!value.isValidUsername) {
                             return 'Please Enter Valid Username';
                           }
+                          if (_usernameAlreadyRegistered) {
+                            _usernameAlreadyRegistered = false;
+                            return 'Username already registered';
+                          }
                           return null;
                         },
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _emailController,
-                        // initialValue: widget.email,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -117,10 +131,18 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                         validator: (value) {
-                          if (value!.isNotEmpty) {
+                          if (value!.isEmpty) {
+                            if (_phoneController.text.isEmpty) {
+                              return 'Both Email and Phone cannot be empty';
+                            }
+                          } else {
                             if (!value.isValidEmail) {
                               return 'Please Enter Valid Email';
                             }
+                          }
+                          if (_emailAlreadyRegistered) {
+                            _emailAlreadyRegistered = false;
+                            return 'Email already registered';
                           }
                           return null;
                         },
@@ -128,7 +150,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _phoneController,
-                        // initialValue: widget.phone,
                         keyboardType: TextInputType.phone,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -138,13 +159,21 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                         validator: (value) {
-                          if (value!.isNotEmpty) {
+                          if (value!.isEmpty) {
+                            if (_emailController.text.isEmpty) {
+                              return 'Both Email and Phone cannot be empty';
+                            }
+                          } else {
                             if (value.length != 10) {
                               return 'Phone Number must be 10 characters long';
                             }
                             if (!value.isValidPhone) {
                               return 'Please Enter Valid Phone Number';
                             }
+                          }
+                          if (_phoneAlreadyRegistered) {
+                            _phoneAlreadyRegistered = false;
+                            return 'Phone Number already registered';
                           }
                           return null;
                         },
@@ -251,15 +280,47 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void _signup() {
+  void _signup() async {
     if (_signUpFormKey.currentState!.validate()) {
-      _isLoading = true;
-      setState(() {});
-      Future.delayed(const Duration(seconds: 2), () {
-        _isLoading = false;
-        setState(() {});
-        context.go('/home');
+      setState(() {
+        _isLoading = true;
       });
+
+      final response = await http.post(
+        Uri.parse('$BASEURL/create_user'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(
+          {
+            'username': _usernameController.text,
+            if (_phoneController.text.isNotEmpty)
+              'phone_number': _phoneController.text,
+            if (_emailController.text.isNotEmpty)
+              'email': _emailController.text,
+            'hashed_password': _passwordController.text,
+          },
+        ),
+      );
+
+      if (response.statusCode == 201) {
+        if (context.mounted) context.go('/login/username');
+      } else {
+        if (response.statusCode == 400) {
+          final error = response.body;
+          if (error.contains('Username')) {
+            _usernameAlreadyRegistered = true;
+          }
+          if (error.contains('Email')) {
+            _emailAlreadyRegistered = true;
+          }
+          if (error.contains('Phone')) {
+            _phoneAlreadyRegistered = true;
+          }
+        }
+      }
+      setState(() {
+        _isLoading = false;
+      });
+      _signUpFormKey.currentState!.validate();
     }
   }
 }
