@@ -27,50 +27,7 @@ class _ScannerPageState extends State<ScannerPage> {
           MobileScanner(
             fit: BoxFit.cover,
             controller: _cameraController,
-            onDetect: (capture) async {
-              if (_isLoading) return;
-              setState(() => _isLoading = true);
-              final List<Barcode> barcodes = capture.barcodes;
-              _isLoading = false;
-
-              if (barcodes.isNotEmpty) {
-                final code = barcodes.first;
-                debugPrint('Barcode found! ${code.rawValue}');
-
-                if (!_fixedScanned) {
-                  if (await _checkFixedQR(code.rawValue!)) {
-                    HapticFeedback.lightImpact();
-                    _fixedScanned = true;
-                    setState(() => _bottomText = "Scan Bottle QR");
-                  } else {
-                    HapticFeedback.lightImpact();
-                    setState(() => _bottomText = "Invalid Bin QR");
-                    await Future.delayed(const Duration(seconds: 2));
-                    setState(() => _bottomText = "Scan Bin QR");
-                  }
-                } else {
-                  final statusCode = await _checkVariableQR(code.rawValue!);
-                  if (statusCode == 200) {
-                    HapticFeedback.lightImpact();
-                    if (!context.mounted) return;
-                    context.goNamed("success");
-                  } else if (statusCode == 404) {
-                    HapticFeedback.lightImpact();
-                    setState(() => _bottomText = "Invalid Bottle QR");
-                    await Future.delayed(const Duration(seconds: 2));
-                    setState(() => _bottomText = "Scan Bottle QR");
-                  } else if (statusCode == 400) {
-                    HapticFeedback.lightImpact();
-                    setState(() => _bottomText = "Already Scanned");
-                    await Future.delayed(const Duration(seconds: 2));
-                    setState(() => _bottomText = "Scan Bottle QR");
-                  }
-                }
-              }
-              // for (final barcode in barcodes) {
-              //   debugPrint('Barcode found! ${barcode.rawValue}');
-              // }
-            },
+            onDetect: detect,
           ),
           if (!_isLoading)
             Positioned.fill(
@@ -179,5 +136,56 @@ class _ScannerPageState extends State<ScannerPage> {
       Uri.parse('$BASEURL/codes/redeem?code_id=$code&user_id=${USER.id}'),
     );
     return response.statusCode;
+  }
+
+  String? _fixedCode;
+
+  void detect(BarcodeCapture capture) async {
+    if (_isLoading) return;
+
+    final List<Barcode> barcodes = capture.barcodes;
+
+    if (barcodes.isNotEmpty) {
+      final code = barcodes.first.rawValue!;
+      if (_fixedScanned && code == _fixedCode) return;
+
+      setState(() => _isLoading = true);
+      debugPrint('Barcode found! $code');
+
+      if (!_fixedScanned) {
+        if (await _checkFixedQR(code!)) {
+          HapticFeedback.lightImpact();
+          _fixedScanned = true;
+          _fixedCode = code;
+          setState(() => _bottomText = "Scan Bottle QR");
+        } else {
+          HapticFeedback.lightImpact();
+          setState(() => _bottomText = "Invalid Bin QR");
+          await Future.delayed(const Duration(seconds: 2));
+          setState(() => _bottomText = "Scan Bin QR");
+        }
+      } else {
+        final statusCode = await _checkVariableQR(code!);
+        if (statusCode == 200) {
+          HapticFeedback.lightImpact();
+          if (!context.mounted) return;
+          context.goNamed("success");
+        } else if (statusCode == 404) {
+          HapticFeedback.lightImpact();
+          setState(() => _bottomText = "Invalid Bottle QR");
+          await Future.delayed(const Duration(seconds: 2));
+          setState(() => _bottomText = "Scan Bottle QR");
+        } else if (statusCode == 400) {
+          HapticFeedback.lightImpact();
+          setState(() => _bottomText = "Already Scanned");
+          await Future.delayed(const Duration(seconds: 2));
+          setState(() => _bottomText = "Scan Bottle QR");
+        }
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 }
