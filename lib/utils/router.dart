@@ -1,17 +1,17 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:the_eco_club/pages/history_page.dart';
-import 'package:the_eco_club/pages/home_page.dart';
-import 'package:the_eco_club/pages/leaderboard_page.dart';
-import 'package:the_eco_club/pages/log_in_email_page.dart';
-import 'package:the_eco_club/pages/scanner_page.dart';
-import 'package:the_eco_club/pages/scanner_success.dart';
-import 'package:the_eco_club/pages/settings_page.dart';
-import 'package:the_eco_club/pages/sign_up_page.dart';
-import 'package:the_eco_club/screens/home_screen.dart';
-import 'package:the_eco_club/screens/log_in_screen.dart';
-import 'package:the_eco_club/screens/scan_screen.dart';
-import 'package:the_eco_club/screens/splash_screen.dart';
+import 'package:qr_earth/pages/history_page.dart';
+import 'package:qr_earth/pages/home_page.dart';
+import 'package:qr_earth/pages/leaderboard_page.dart';
+import 'package:qr_earth/pages/log_in_email_page.dart';
+import 'package:qr_earth/pages/scanner_page.dart';
+import 'package:qr_earth/pages/scanner_success.dart';
+import 'package:qr_earth/pages/settings_page.dart';
+import 'package:qr_earth/pages/sign_up_page.dart';
+import 'package:qr_earth/screens/home_screen.dart';
+import 'package:qr_earth/screens/log_in_screen.dart';
+import 'package:qr_earth/screens/scan_screen.dart';
+import 'package:qr_earth/screens/splash_screen.dart';
 
 GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:the_eco_club/utils/constants.dart';
+import 'package:qr_earth/utils/constants.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

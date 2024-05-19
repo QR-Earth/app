@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:the_eco_club/utils/constants.dart';
-import 'package:the_eco_club/widgets/scanner_overlay.dart';
+import 'package:qr_earth/utils/constants.dart';
+import 'package:qr_earth/widgets/scanner_overlay.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 
@@ -153,7 +153,7 @@ class _ScannerPageState extends State<ScannerPage> {
       debugPrint('Barcode found! $code');
 
       if (!_fixedScanned) {
-        if (await _checkFixedQR(code!)) {
+        if (await _checkFixedQR(code)) {
           HapticFeedback.lightImpact();
           _fixedScanned = true;
           _fixedCode = code;
@@ -165,7 +165,7 @@ class _ScannerPageState extends State<ScannerPage> {
           setState(() => _bottomText = "Scan Bin QR");
         }
       } else {
-        final statusCode = await _checkVariableQR(code!);
+        final statusCode = await _checkVariableQR(code);
         if (statusCode == 200) {
           HapticFeedback.lightImpact();
           if (!context.mounted) return;

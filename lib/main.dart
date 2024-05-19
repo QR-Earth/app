@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_eco_club/utils/router.dart';
+import 'package:qr_earth/utils/router.dart';
 
 void main() {
   runApp(const MyApp());
