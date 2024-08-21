@@ -1,6 +1,7 @@
 const String KEYLOGIN = "isLoggedIn";
 const String KEYID = "userid";
-const String BASEURL = "https://qr-earth-server.azurewebsites.net/";
+const String BASEURL =
+    "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net/";
 
 User USER = User();
 

@@ -53,49 +53,49 @@ class _ScannerPageState extends State<ScannerPage> {
                     const SizedBox(width: 10.0),
                     IconButton(
                       onPressed: () => context.goNamed("home"),
-                      icon: Icon(Icons.arrow_back_ios_new_rounded),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
                       color: Colors.white,
                     ),
                     Expanded(child: Container()),
-                    IconButton(
-                      color: Colors.white,
-                      icon: ValueListenableBuilder(
-                        valueListenable: _cameraController.torchState,
-                        builder: (context, state, child) {
-                          switch (state) {
-                            case TorchState.off:
-                              return const Icon(
-                                Icons.flashlight_off,
-                              );
-                            case TorchState.on:
-                              return const Icon(
-                                Icons.flashlight_on,
-                                color: Colors.yellow,
-                              );
-                          }
-                        },
-                      ),
-                      iconSize: 32.0,
-                      onPressed: () => _cameraController.toggleTorch(),
-                    ),
-                    const SizedBox(width: 10.0),
-                    IconButton(
-                      color: Colors.white,
-                      icon: ValueListenableBuilder(
-                        valueListenable: _cameraController.cameraFacingState,
-                        builder: (context, state, child) {
-                          switch (state) {
-                            case CameraFacing.front:
-                              return const Icon(Icons.camera_front);
-                            case CameraFacing.back:
-                              return const Icon(Icons.camera_rear);
-                          }
-                        },
-                      ),
-                      iconSize: 32.0,
-                      onPressed: () => _cameraController.switchCamera(),
-                    ),
-                    const SizedBox(width: 10.0)
+                    // IconButton(
+                    //   color: Colors.white,
+                    //   icon: ValueListenableBuilder(
+                    //     valueListenable: _cameraController.torchEnabled,
+                    //     builder: (context, state, child) {
+                    //       switch (state) {
+                    //         case TorchState.off:
+                    //           return const Icon(
+                    //             Icons.flashlight_off,
+                    //           );
+                    //         case TorchState.on:
+                    //           return const Icon(
+                    //             Icons.flashlight_on,
+                    //             color: Colors.yellow,
+                    //           );
+                    //       }
+                    //     },
+                    //   ),
+                    //   iconSize: 32.0,
+                    //   onPressed: () => _cameraController.toggleTorch(),
+                    // ),
+                    // const SizedBox(width: 10.0),
+                    // IconButton(
+                    //   color: Colors.white,
+                    //   icon: ValueListenableBuilder(
+                    //     valueListenable: _cameraController.cameraFacingState,
+                    //     builder: (context, state, child) {
+                    //       switch (state) {
+                    //         case CameraFacing.front:
+                    //           return const Icon(Icons.camera_front);
+                    //         case CameraFacing.back:
+                    //           return const Icon(Icons.camera_rear);
+                    //       }
+                    //     },
+                    //   ),
+                    //   iconSize: 32.0,
+                    //   onPressed: () => _cameraController.switchCamera(),
+                    // ),
+                    // const SizedBox(width: 10.0)
                   ],
                 ),
                 Expanded(child: Container()),
