@@ -1,48 +1,21 @@
-const String KEYLOGIN = "isLoggedIn";
-const String KEYID = "userid";
-const String BASEURL =
-    "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net/";
-
-User USER = User();
-
-class User {
-  late String username;
-  late String? email;
-  late String? phone_number;
-  late String id;
-  late int codes_count;
-  late String created_at;
-
-  void setFromJson(Map<String, dynamic> json) {
-    username = json['username'];
-    email = json['email'];
-    phone_number = json['phone_number'];
-    id = json['id'];
-    codes_count = json['codes_count'];
-    created_at = json['created_at'];
-  }
+class SharedPrefKeys {
+  static const String isLoggedIn = "is_logged_in";
+  static const String userData = "userData";
 }
 
-class Leaderboard {
-  late String username;
-  late int codes_count;
-
-  static fromJson(Map<String, dynamic> json) {
-    Leaderboard l = Leaderboard();
-    l.username = json['username'];
-    l.codes_count = json['codes_count'];
-    return l;
-  }
+class AppConfig {
+  static const serverBaseUrl = "http://192.168.0.21:8000";
 }
 
-class UserHistory {
-  late String id;
-  late String redeemed_at;
+class ApiRoutes {
+  static const login = "/users/login";
+  static const signup = "/users/signup";
+  static const userInfo = "/users/info";
+  static const userTransactions = "/users/transactions";
 
-  static fromJson(Map<String, dynamic> json) {
-    UserHistory uh = UserHistory();
-    uh.id = json['id'];
-    uh.redeemed_at = json['redeemed_at'];
-    return uh;
-  }
+  static const leaderboard = "/public/leaderboard";
+
+  static const codeRedeem = "/codes/redeem";
+  static const codeValidate = "/codes/validate";
+  static const codeCheckFixed = "/codes/check_fixed";
 }

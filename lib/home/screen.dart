@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
+  final StatefulNavigationShell navigationShell;
   const HomeScreen({
     Key? key,
     required this.navigationShell,
   }) : super(key: key ?? const ValueKey('HomeScreen'));
-
-  final StatefulNavigationShell navigationShell;
 
   void _goBranch(int index) {
     navigationShell.goBranch(
@@ -19,17 +19,21 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+        ),
+        toolbarHeight: 0,
+      ),
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
-        indicatorColor: Colors.transparent,
         destinations: const [
           NavigationDestination(
             label: 'Home',
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(
               Icons.home,
-              color: Colors.lightGreen,
             ),
           ),
           NavigationDestination(
@@ -37,7 +41,6 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(Icons.leaderboard_outlined),
             selectedIcon: Icon(
               Icons.leaderboard,
-              color: Colors.lightGreen,
             ),
           ),
           NavigationDestination(
@@ -45,7 +48,6 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(Icons.history_outlined),
             selectedIcon: Icon(
               Icons.history,
-              color: Colors.lightGreen,
             ),
           ),
           NavigationDestination(
@@ -53,7 +55,6 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(
               Icons.settings,
-              color: Colors.lightGreen,
             ),
           ),
         ],

@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:qr_earth/scanner/widgets/scanner_overlay.dart';
+import 'package:qr_earth/utils/constants.dart';
+import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:qr_earth/utils/constants.dart';
-import 'package:qr_earth/widgets/scanner_overlay.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 
@@ -57,45 +62,6 @@ class _ScannerPageState extends State<ScannerPage> {
                       color: Colors.white,
                     ),
                     Expanded(child: Container()),
-                    // IconButton(
-                    //   color: Colors.white,
-                    //   icon: ValueListenableBuilder(
-                    //     valueListenable: _cameraController.torchEnabled,
-                    //     builder: (context, state, child) {
-                    //       switch (state) {
-                    //         case TorchState.off:
-                    //           return const Icon(
-                    //             Icons.flashlight_off,
-                    //           );
-                    //         case TorchState.on:
-                    //           return const Icon(
-                    //             Icons.flashlight_on,
-                    //             color: Colors.yellow,
-                    //           );
-                    //       }
-                    //     },
-                    //   ),
-                    //   iconSize: 32.0,
-                    //   onPressed: () => _cameraController.toggleTorch(),
-                    // ),
-                    // const SizedBox(width: 10.0),
-                    // IconButton(
-                    //   color: Colors.white,
-                    //   icon: ValueListenableBuilder(
-                    //     valueListenable: _cameraController.cameraFacingState,
-                    //     builder: (context, state, child) {
-                    //       switch (state) {
-                    //         case CameraFacing.front:
-                    //           return const Icon(Icons.camera_front);
-                    //         case CameraFacing.back:
-                    //           return const Icon(Icons.camera_rear);
-                    //       }
-                    //     },
-                    //   ),
-                    //   iconSize: 32.0,
-                    //   onPressed: () => _cameraController.switchCamera(),
-                    // ),
-                    // const SizedBox(width: 10.0)
                   ],
                 ),
                 Expanded(child: Container()),
@@ -123,19 +89,27 @@ class _ScannerPageState extends State<ScannerPage> {
   }
 
   Future<bool> _checkFixedQR(String code) async {
-    final response =
-        await http.get(Uri.parse('$BASEURL/codes/check_fixed_id?code=$code'));
-    if (response.statusCode == 200) {
+    final response = await http.get(Uri.parse(
+        '${AppConfig.serverBaseUrl}${ApiRoutes.codeCheckFixed}?fixed_code_id=$code'));
+    if (response.statusCode == HttpStatus.ok) {
       return true;
     }
     return false;
   }
 
-  Future<int> _checkVariableQR(String code) async {
+  Future<http.Response> _checkVariableQR(String code) async {
     final response = await http.post(
-      Uri.parse('$BASEURL/codes/redeem?code_id=$code&user_id=${USER.id}'),
+      Uri.parse('${AppConfig.serverBaseUrl}${ApiRoutes.codeRedeem}'),
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'code_id': code,
+        'user_id': Global.user.id,
+      }),
     );
-    return response.statusCode;
+    return response;
   }
 
   String? _fixedCode;
@@ -165,17 +139,17 @@ class _ScannerPageState extends State<ScannerPage> {
           setState(() => _bottomText = "Scan Bin QR");
         }
       } else {
-        final statusCode = await _checkVariableQR(code);
-        if (statusCode == 200) {
+        final response = await _checkVariableQR(code);
+        if (response.statusCode == 200) {
           HapticFeedback.lightImpact();
           if (!context.mounted) return;
-          context.goNamed("success");
-        } else if (statusCode == 404) {
+          context.goNamed("scanner_success");
+        } else if (response.statusCode == 404) {
           HapticFeedback.lightImpact();
           setState(() => _bottomText = "Invalid Bottle QR");
           await Future.delayed(const Duration(seconds: 2));
           setState(() => _bottomText = "Scan Bottle QR");
-        } else if (statusCode == 400) {
+        } else if (response.statusCode == 400) {
           HapticFeedback.lightImpact();
           setState(() => _bottomText = "Already Scanned");
           await Future.delayed(const Duration(seconds: 2));

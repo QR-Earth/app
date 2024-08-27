@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:qr_earth/models/user.dart';
+import 'package:qr_earth/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:qr_earth/utils/constants.dart';
 
 class LeaderboardPage extends StatefulWidget {
   const LeaderboardPage({super.key});
@@ -30,24 +31,24 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(leaderboardList[index].username),
-            trailing: Text(leaderboardList[index].codes_count.toString()),
+            trailing: Text(leaderboardList[index].points.toString()),
           );
         },
       ),
     );
   }
 
-  List<Leaderboard> leaderboardList = [];
+  List<LeaderboardEntry> leaderboardList = [];
   void fetchLeaderboard() async {
-    final response =
-        await http.get(Uri.parse('$BASEURL/public/leaderboard/?limit=10'));
+    final response = await http.get(Uri.parse(
+        '${AppConfig.serverBaseUrl}${ApiRoutes.leaderboard}?limit=10'));
 
     if (response.statusCode == 200) {
       // parse the list of objects containg username and thier score
       // and display them in a listview
-      Iterable leaderboardResponse = json.decode(response.body);
-      leaderboardList = List<Leaderboard>.from(
-          leaderboardResponse.map((x) => Leaderboard.fromJson(x)));
+      Iterable leaderboardResponse = jsonDecode(response.body);
+      leaderboardList = List<LeaderboardEntry>.from(
+          leaderboardResponse.map((x) => LeaderboardEntry.fromJson(x)));
       setState(() {
         leaderboardList = leaderboardList;
       });

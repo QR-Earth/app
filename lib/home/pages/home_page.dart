@@ -1,6 +1,6 @@
+import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qr_earth/utils/constants.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,7 +10,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -27,6 +26,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               Card(
+                color: Theme.of(context).colorScheme.onInverseSurface,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
@@ -47,9 +47,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 10.0),
                       Text(
-                        USER.username,
-                        style: const TextStyle(
-                          color: Colors.lightGreen,
+                        Global.user.username,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
                           letterSpacing: 2.0,
                           fontSize: 28.0,
                           fontWeight: FontWeight.bold,
@@ -64,9 +64,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 10.0),
                       Text(
-                        USER.codes_count.toString(),
-                        style: const TextStyle(
-                          color: Colors.lightGreen,
+                        Global.user.points.toString(),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
                           letterSpacing: 2.0,
                           fontSize: 28.0,
                           fontWeight: FontWeight.bold,
