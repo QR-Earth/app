@@ -73,7 +73,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       TextFormField(
                         controller: _usernameController,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.text,
                         decoration: const InputDecoration(
                           labelText: "Username",
                           hintText: "Enter your username",
@@ -324,6 +324,6 @@ class _SignUpPageState extends State<SignUpPage> {
         content: Text("Sign Up Successful"),
       ),
     );
-    context.goNamed("home");
+    context.goNamed("login");
   }
 }

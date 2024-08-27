@@ -140,18 +140,18 @@ class _ScannerPageState extends State<ScannerPage> {
         }
       } else {
         final response = await _checkVariableQR(code);
-        if (response.statusCode == 200) {
+        if (response.statusCode == HttpStatus.ok) {
           HapticFeedback.lightImpact();
           if (!context.mounted) return;
           context.goNamed("scanner_success");
-        } else if (response.statusCode == 404) {
+        } else if (response.statusCode == HttpStatus.notFound) {
           HapticFeedback.lightImpact();
           setState(() => _bottomText = "Invalid Bottle QR");
           await Future.delayed(const Duration(seconds: 2));
           setState(() => _bottomText = "Scan Bottle QR");
-        } else if (response.statusCode == 400) {
+        } else if (response.statusCode == HttpStatus.badRequest) {
           HapticFeedback.lightImpact();
-          setState(() => _bottomText = "Already Scanned");
+          setState(() => _bottomText = "Already Redeemed");
           await Future.delayed(const Duration(seconds: 2));
           setState(() => _bottomText = "Scan Bottle QR");
         }
