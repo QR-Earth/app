@@ -4,7 +4,7 @@ class SharedPrefKeys {
 }
 
 class AppConfig {
-  static const serverBaseUrl = "http://192.168.0.21:8000";
+  static const serverBaseUrl = "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
 }
 
 class ApiRoutes {

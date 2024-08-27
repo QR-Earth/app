@@ -31,9 +31,12 @@ class _SplashScreenState extends State<SplashScreen> {
           systemNavigationBarIconBrightness: Theme.of(context).brightness));
     }
 
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text("Splash Screen"),
+        child: Image.asset(
+          'assets/images/banner.png',
+          width: 300,
+        ),
       ),
     );
   }
