@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:qr_earth/scanner/widgets/scanner_overlay.dart';
+import 'package:qr_earth/utils/colors.dart';
 import 'package:qr_earth/utils/constants.dart';
 import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
@@ -39,10 +40,10 @@ class _ScannerPageState extends State<ScannerPage> {
               child: Container(
                 decoration: ShapeDecoration(
                   shape: QrScannerOverlayShape(
-                    borderColor: Colors.lightGreen,
+                    borderColor: keyColor,
                     borderRadius: 10,
-                    borderLength: 20,
-                    borderWidth: 5,
+                    borderLength: 10,
+                    borderWidth: 20,
                     overlayColor: Colors.black.withOpacity(0.75),
                     // cutOutSize: 300,
                   ),

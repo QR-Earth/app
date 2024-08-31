@@ -27,6 +27,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.transparent,
         selectedIndex: navigationShell.currentIndex,
         destinations: const [
           NavigationDestination(

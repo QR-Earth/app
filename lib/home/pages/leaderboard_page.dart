@@ -29,12 +29,18 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       ),
       body: SafePadding(
         child: ListView.builder(
-          itemCount: leaderboardList.length,
+          itemCount: leaderboardList.length + 1,
           itemBuilder: (context, index) {
+            if (index == 0) {
+              return const ListTile(
+                title: Text('Username'),
+                trailing: Text('Points'),
+              );
+            }
             return Card(
               child: ListTile(
-                title: Text(leaderboardList[index].username),
-                trailing: Text(leaderboardList[index].points.toString()),
+                title: Text(leaderboardList[index - 1].username),
+                trailing: Text(leaderboardList[index - 1].points.toString()),
               ),
             );
           },

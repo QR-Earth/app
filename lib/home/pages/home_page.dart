@@ -1,4 +1,5 @@
 import 'package:qr_earth/home/widgets/safe_padding.dart';
+import 'package:qr_earth/utils/colors.dart';
 import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +19,13 @@ class _HomePageState extends State<HomePage> {
         leadingWidth: 60,
         titleSpacing: 0,
         leading: Center(child: Image.asset("assets/images/logo.png")),
-        title: const Text('QR Earth'),
+        title: const Text(
+          'QR Earth',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: keyColor,
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.goNamed('scanner'),
@@ -29,7 +36,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             Card(
-              color: Theme.of(context).colorScheme.onInverseSurface,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(

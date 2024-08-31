@@ -20,14 +20,24 @@ class _SettingsPageState extends State<SettingsPage> {
       body: SafePadding(
         child: ListView(
           children: [
+            Image.asset(
+              "assets/images/banner.png",
+              width: 100,
+            ),
             ListTile(
-              title: const Text("Logout"),
+              leading: const Icon(
+                Icons.exit_to_app,
+                color: Colors.red,
+              ),
+              title: const Text("Log out", style: TextStyle(color: Colors.red)),
               onTap: () => showAdaptiveDialog(
                 context: context,
                 useRootNavigator: true,
                 builder: (context) => AlertDialog.adaptive(
-                  title: const Text("Logout"),
-                  content: const Text("Are you sure you want to logout?"),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.onInverseSurface,
+                  title: const Text("Log out"),
+                  content: const Text("Are you sure you want to log out?"),
                   actions: [
                     TextButton(
                       onPressed: () async {

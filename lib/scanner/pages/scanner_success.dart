@@ -23,8 +23,22 @@ class _ScannerSuccessPageState extends State<ScannerSuccessPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Success!")),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Congratulations',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Image.asset('assets/images/asset1.png', width: 100),
+          ],
+        ),
+      ),
     );
   }
 
