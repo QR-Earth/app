@@ -15,7 +15,7 @@ class AuthScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: Theme.of(context).colorScheme.background,
+          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
         ),
         toolbarHeight: 0,
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qr_earth/home/widgets/safe_padding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -16,8 +17,7 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: const Text('Settings'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: SafePadding(
         child: ListView(
           children: [
             ListTile(

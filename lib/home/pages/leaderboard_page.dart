@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:qr_earth/home/widgets/safe_padding.dart';
 import 'package:qr_earth/models/user.dart';
 import 'package:qr_earth/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -26,14 +27,18 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         // title: Text('Home Page'),
         title: const Text('Leaderboards'),
       ),
-      body: ListView.builder(
-        itemCount: leaderboardList.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(leaderboardList[index].username),
-            trailing: Text(leaderboardList[index].points.toString()),
-          );
-        },
+      body: SafePadding(
+        child: ListView.builder(
+          itemCount: leaderboardList.length,
+          itemBuilder: (context, index) {
+            return Card(
+              child: ListTile(
+                title: Text(leaderboardList[index].username),
+                trailing: Text(leaderboardList[index].points.toString()),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

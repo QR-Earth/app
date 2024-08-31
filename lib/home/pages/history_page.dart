@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:qr_earth/home/widgets/safe_padding.dart';
 
 import 'package:qr_earth/models/user.dart';
 import 'package:qr_earth/utils/constants.dart';
@@ -28,23 +29,25 @@ class _HistoryPageState extends State<HistoryPage> {
         // title: Text('Home Page'),
         title: const Text('History Page'),
       ),
-      body: ListView.builder(
-        itemCount: historyList.length,
-        itemBuilder: (context, index) {
-          var timeStamp = DateTime.parse(historyList[index].timestamp);
-          var amount = historyList[index].amount;
+      body: SafePadding(
+        child: ListView.builder(
+          itemCount: historyList.length,
+          itemBuilder: (context, index) {
+            var timeStamp = DateTime.parse(historyList[index].timestamp);
+            var amount = historyList[index].amount;
 
-          return ListTile(
-            leading: Text((index + 1).toString()),
-            title: Text(
-              "On ${timeStamp.day}/${timeStamp.month}/${timeStamp.year} at ${timeStamp.hour}:${timeStamp.minute}",
-            ),
-            trailing: Text(
-              amount.toString(),
-              style: TextStyle(color: amount > 0 ? Colors.green : Colors.red),
-            ),
-          );
-        },
+            return ListTile(
+              leading: Text((index + 1).toString()),
+              title: Text(
+                "On ${timeStamp.day}/${timeStamp.month}/${timeStamp.year} at ${timeStamp.hour}:${timeStamp.minute}",
+              ),
+              trailing: Text(
+                amount.toString(),
+                style: TextStyle(color: amount > 0 ? Colors.green : Colors.red),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

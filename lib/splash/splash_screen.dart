@@ -25,13 +25,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
-          systemNavigationBarIconBrightness: Theme.of(context).brightness));
-    }
-
     return Scaffold(
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+        ),
+        toolbarHeight: 0,
+      ),
       body: Center(
         child: Image.asset(
           'assets/images/banner.png',
