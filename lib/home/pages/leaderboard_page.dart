@@ -26,24 +26,46 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       appBar: AppBar(
         // title: Text('Home Page'),
         title: const Text('Leaderboards'),
+        forceMaterialTransparency: true,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
       ),
       body: SafePadding(
-        child: ListView.builder(
-          itemCount: leaderboardList.length + 1,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return const ListTile(
-                title: Text('Username'),
-                trailing: Text('Points'),
-              );
-            }
-            return Card(
-              child: ListTile(
-                title: Text(leaderboardList[index - 1].username),
-                trailing: Text(leaderboardList[index - 1].points.toString()),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Image.asset(
+              "assets/images/asset3.png",
+              height: 200,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const ListTile(
+              leading: Text('Rank'),
+              title: Text('Username'),
+              trailing: Text('Points'),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: leaderboardList.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: ListTile(
+                      leading: Text((index + 1).toString()),
+                      title: Text(leaderboardList[index].username),
+                      trailing: Text(leaderboardList[index].points.toString()),
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            )
+          ],
         ),
       ),
     );

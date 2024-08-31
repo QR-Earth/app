@@ -30,23 +30,48 @@ class _HistoryPageState extends State<HistoryPage> {
         title: const Text('History Page'),
       ),
       body: SafePadding(
-        child: ListView.builder(
-          itemCount: historyList.length,
-          itemBuilder: (context, index) {
-            var timeStamp = DateTime.parse(historyList[index].timestamp);
-            var amount = historyList[index].amount;
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Image.asset(
+              "assets/images/asset4.png",
+              height: 200,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const ListTile(
+              leading: Text(''),
+              title: Text('Time'),
+              trailing: Text('Points'),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: historyList.length,
+                itemBuilder: (context, index) {
+                  var timeStamp = DateTime.parse(historyList[index].timestamp);
+                  var amount = historyList[index].amount;
 
-            return ListTile(
-              leading: Text((index + 1).toString()),
-              title: Text(
-                "On ${timeStamp.day}/${timeStamp.month}/${timeStamp.year} at ${timeStamp.hour}:${timeStamp.minute}",
+                  return ListTile(
+                    leading: Text((index + 1).toString()),
+                    title: Text(
+                      "On ${timeStamp.day}/${timeStamp.month}/${timeStamp.year} at ${timeStamp.hour}:${timeStamp.minute}",
+                    ),
+                    trailing: Text(
+                      amount.toString(),
+                      style: TextStyle(
+                          color: amount > 0 ? Colors.green : Colors.red),
+                    ),
+                  );
+                },
               ),
-              trailing: Text(
-                amount.toString(),
-                style: TextStyle(color: amount > 0 ? Colors.green : Colors.red),
-              ),
-            );
-          },
+            )
+          ],
         ),
       ),
     );

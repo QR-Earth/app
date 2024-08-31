@@ -21,6 +21,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Theme.of(context).colorScheme.surface,
           systemNavigationBarColor: Theme.of(context).colorScheme.surface,
         ),
         toolbarHeight: 0,

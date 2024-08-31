@@ -20,9 +20,15 @@ class _SettingsPageState extends State<SettingsPage> {
       body: SafePadding(
         child: ListView(
           children: [
+            const SizedBox(
+              height: 20,
+            ),
             Image.asset(
               "assets/images/banner.png",
-              width: 100,
+              height: 200,
+            ),
+            const SizedBox(
+              height: 20,
             ),
             ListTile(
               leading: const Icon(

@@ -33,21 +33,26 @@ class _HomePageState extends State<HomePage> {
         icon: const Icon(Icons.qr_code_scanner_rounded),
       ),
       body: SafePadding(
-        child: Column(
+        child: ListView(
           children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Image.asset(
+              "assets/images/asset1.png",
+              height: 200,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    const Center(
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 50.0,
-                      ),
-                    ),
-                    const SizedBox(height: 10.0),
                     const Text(
                       'USERNAME',
                       style: TextStyle(
