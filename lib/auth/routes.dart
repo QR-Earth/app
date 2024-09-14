@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:qr_earth/auth/pages/log_in_page.dart';
 import 'package:qr_earth/auth/pages/sign_up_page.dart';
 import 'package:qr_earth/auth/screen.dart';
@@ -15,7 +16,10 @@ StatefulShellRoute authRoute = StatefulShellRoute.indexedStack(
           path: "/login",
           pageBuilder: (context, state) => NoTransitionPage(
             key: state.pageKey,
-            child: const LoginPage(),
+            child: LoginPage(
+              key: UniqueKey(),
+              username: state.uri.queryParameters['username'],
+            ),
           ),
         ),
       ],
@@ -27,7 +31,11 @@ StatefulShellRoute authRoute = StatefulShellRoute.indexedStack(
           path: "/signup",
           pageBuilder: (context, state) => NoTransitionPage(
             key: state.pageKey,
-            child: const SignUpPage(),
+            child: SignUpPage(
+              key: UniqueKey(),
+              username: state.uri.queryParameters['username'],
+              email: state.uri.queryParameters['email'],
+            ),
           ),
         ),
       ],

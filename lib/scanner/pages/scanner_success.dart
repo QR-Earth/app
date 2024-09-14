@@ -49,7 +49,6 @@ class _ScannerSuccessPageState extends State<ScannerSuccessPage> {
       // success
       Global.user.setFromJson(jsonDecode(response.body));
     }
-    await Future.delayed(const Duration(seconds: 2));
     if (!context.mounted) return;
     context.goNamed('home');
   }

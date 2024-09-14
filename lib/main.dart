@@ -2,7 +2,8 @@ import 'package:qr_earth/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_earth/utils/colors.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

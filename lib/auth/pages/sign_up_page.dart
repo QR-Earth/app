@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  final String? username;
+  final String? email;
+
+  const SignUpPage({super.key, this.username, this.email});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -31,6 +34,13 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _usernameAlreadyRegistered = false;
   bool _emailAlreadyRegistered = false;
   bool _phoneAlreadyRegistered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController.text = widget.username ?? '';
+    _emailController.text = widget.email ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +86,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         keyboardType: TextInputType.text,
                         decoration: const InputDecoration(
                           labelText: "Username",
-                          hintText: "Enter your username",
+                          hintText: "Enter your username (no spaces)",
                           prefixIcon: Icon(Icons.person),
                         ),
                         validator: (value) {
@@ -96,12 +106,12 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
-                          labelText: 'Email (Optional)',
+                          labelText: 'Email',
                           hintText: 'Enter your email',
                           prefixIcon: Icon(
                             Icons.email,
@@ -125,12 +135,17 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                       ),
                       const SizedBox(height: 10),
+                      const Center(
+                          child: Text(
+                        "Or",
+                        textAlign: TextAlign.center,
+                      )),
                       TextFormField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         decoration: const InputDecoration(
                           hintText: 'Enter your phone number',
-                          labelText: 'Phone (Optional)',
+                          labelText: 'Phone',
                           prefixIcon: Icon(
                             Icons.phone,
                           ),
@@ -155,7 +170,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: _passwordController,
                         obscureText: !_showPassword,
@@ -231,9 +246,17 @@ class _SignUpPageState extends State<SignUpPage> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              context.goNamed("login");
+                              context.replaceNamed(
+                                "login",
+                                queryParameters: {
+                                  'username':
+                                      _usernameController.text.isNotEmpty
+                                          ? _usernameController.text
+                                          : _emailController.text,
+                                },
+                              );
                             },
-                            child: const Text("Log In"),
+                            child: const Text("Already have an account?"),
                           ),
                           FilledButton(
                             onPressed: _signUp,
@@ -324,6 +347,11 @@ class _SignUpPageState extends State<SignUpPage> {
         content: Text("Sign Up Successful"),
       ),
     );
-    context.goNamed("login");
+    context.pushNamed(
+      "login",
+      queryParameters: {
+        'username': _usernameController.text,
+      },
+    );
   }
 }

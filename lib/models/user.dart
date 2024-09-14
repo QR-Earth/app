@@ -20,12 +20,12 @@ class User {
 
 class LeaderboardEntry {
   late String username;
-  late int points;
+  late int redeemedCodeCount;
 
   static fromJson(Map<String, dynamic> json) {
     LeaderboardEntry l = LeaderboardEntry();
     l.username = json['username'];
-    l.points = json['points'];
+    l.redeemedCodeCount = json['redeemed_code_count'];
     return l;
   }
 }

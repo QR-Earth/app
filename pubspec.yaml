@@ -1,7 +1,7 @@
 name: qr_earth
 description: "Plastic Recycle App"
 publish_to: "none"
-version: 0.2.0+2
+version: 0.2.2+4
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -12,7 +12,10 @@ dependencies:
   go_router: ^14.1.2
   http: ^1.2.1
   mobile_scanner: ^5.2.1
+  qr_flutter: ^4.1.0
+  screen_brightness: ^1.0.1
   shared_preferences: ^2.2.3
+  upgrader: ^11.0.0
 
 dev_dependencies:
   flutter_test:

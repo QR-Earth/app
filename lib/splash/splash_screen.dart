@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:upgrader/upgrader.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,17 +26,22 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+    return UpgradeAlert(
+      barrierDismissible: false,
+      showIgnore: false,
+      showLater: false,
+      child: Scaffold(
+        appBar: AppBar(
+          systemOverlayStyle: SystemUiOverlayStyle(
+            systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+          ),
+          toolbarHeight: 0,
         ),
-        toolbarHeight: 0,
-      ),
-      body: Center(
-        child: Image.asset(
-          'assets/images/banner.png',
-          width: 300,
+        body: Center(
+          child: Image.asset(
+            'assets/images/banner.png',
+            width: 300,
+          ),
         ),
       ),
     );

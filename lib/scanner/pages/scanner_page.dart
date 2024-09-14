@@ -21,7 +21,7 @@ class ScannerPage extends StatefulWidget {
 
 class _ScannerPageState extends State<ScannerPage> {
   bool _isLoading = false;
-  String _bottomText = "Scan Bin QR";
+  String _bottomText = "🗑️\nScan Dustbin QR";
   bool _fixedScanned = false;
   final MobileScannerController _cameraController = MobileScannerController();
 
@@ -63,14 +63,40 @@ class _ScannerPageState extends State<ScannerPage> {
                       color: Colors.white,
                     ),
                     Expanded(child: Container()),
+                    IconButton(
+                      onPressed: () =>
+                          ScaffoldMessenger.of(context).showMaterialBanner(
+                        MaterialBanner(
+                          content: const Text(
+                              "Scan the QR code on the dustbin to start recycling"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => ScaffoldMessenger.of(context)
+                                  .hideCurrentMaterialBanner(),
+                              child: const Text("Got it"),
+                            ),
+                          ],
+                        ),
+                      ),
+                      icon: const Icon(Icons.help_rounded),
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 10.0),
                   ],
                 ),
                 Expanded(child: Container()),
-                Text(
-                  _bottomText,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24.0,
+                Card(
+                  color: Colors.black.withOpacity(0.5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(
+                      _bottomText,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24.0,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 50.0),
@@ -132,12 +158,12 @@ class _ScannerPageState extends State<ScannerPage> {
           HapticFeedback.lightImpact();
           _fixedScanned = true;
           _fixedCode = code;
-          setState(() => _bottomText = "Scan Bottle QR");
+          setState(() => _bottomText = "🥤\nScan Bottle QR");
         } else {
           HapticFeedback.lightImpact();
-          setState(() => _bottomText = "Invalid Bin QR");
+          setState(() => _bottomText = "❌\nInvalid Bin QR");
           await Future.delayed(const Duration(seconds: 2));
-          setState(() => _bottomText = "Scan Bin QR");
+          setState(() => _bottomText = "🗑️\nScan Bin QR");
         }
       } else {
         final response = await _checkVariableQR(code);
@@ -147,14 +173,14 @@ class _ScannerPageState extends State<ScannerPage> {
           context.goNamed("scanner_success");
         } else if (response.statusCode == HttpStatus.notFound) {
           HapticFeedback.lightImpact();
-          setState(() => _bottomText = "Invalid Bottle QR");
+          setState(() => _bottomText = "❌\nInvalid Bottle QR");
           await Future.delayed(const Duration(seconds: 2));
-          setState(() => _bottomText = "Scan Bottle QR");
+          setState(() => _bottomText = "🥤\nScan Bottle QR");
         } else if (response.statusCode == HttpStatus.badRequest) {
           HapticFeedback.lightImpact();
-          setState(() => _bottomText = "Already Redeemed");
+          setState(() => _bottomText = "❌\nAlready Redeemed");
           await Future.delayed(const Duration(seconds: 2));
-          setState(() => _bottomText = "Scan Bottle QR");
+          setState(() => _bottomText = "🥤\nScan Bottle QR");
         }
       }
 

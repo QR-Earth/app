@@ -27,7 +27,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       appBar: AppBar(
         // title: Text('Home Page'),
-        title: const Text('History Page'),
+        title: const Text('Scan History'),
       ),
       body: SafePadding(
         child: Column(
@@ -51,24 +51,28 @@ class _HistoryPageState extends State<HistoryPage> {
               trailing: Text('Points'),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: historyList.length,
-                itemBuilder: (context, index) {
-                  var timeStamp = DateTime.parse(historyList[index].timestamp);
-                  var amount = historyList[index].amount;
+              child: RefreshIndicator.adaptive(
+                onRefresh: fetchHistory,
+                child: ListView.builder(
+                  itemCount: historyList.length,
+                  itemBuilder: (context, index) {
+                    var timeStamp =
+                        DateTime.parse(historyList[index].timestamp);
+                    var amount = historyList[index].amount;
 
-                  return ListTile(
-                    leading: Text((index + 1).toString()),
-                    title: Text(
-                      "On ${timeStamp.day}/${timeStamp.month}/${timeStamp.year} at ${timeStamp.hour}:${timeStamp.minute}",
-                    ),
-                    trailing: Text(
-                      amount.toString(),
-                      style: TextStyle(
-                          color: amount > 0 ? Colors.green : Colors.red),
-                    ),
-                  );
-                },
+                    return ListTile(
+                      leading: Text((index + 1).toString()),
+                      title: Text(
+                        "On ${timeStamp.day}/${timeStamp.month}/${timeStamp.year} at ${timeStamp.hour}:${timeStamp.minute}",
+                      ),
+                      trailing: Text(
+                        amount.toString(),
+                        style: TextStyle(
+                            color: amount > 0 ? Colors.green : Colors.red),
+                      ),
+                    );
+                  },
+                ),
               ),
             )
           ],
@@ -79,7 +83,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   List<UserTransactions> historyList = [];
 
-  void fetchHistory() async {
+  Future<void> fetchHistory() async {
     final response = await http.get(Uri.parse(
         '${AppConfig.serverBaseUrl}${ApiRoutes.userTransactions}?user_id=${Global.user.id}&qunatiy=10'));
 

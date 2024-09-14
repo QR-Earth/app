@@ -10,7 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final String? username;
+  const LoginPage({super.key, this.username});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -25,6 +26,12 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _userNotFound = false;
   bool _wrongPassword = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController.text = widget.username ?? "";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,9 +127,19 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            context.goNamed("signup");
+                            context.replaceNamed(
+                              "signup",
+                              queryParameters:
+                                  _usernameController.text.isValidEmail
+                                      ? {
+                                          "email": _usernameController.text,
+                                        }
+                                      : {
+                                          "username": _usernameController.text,
+                                        },
+                            );
                           },
-                          child: const Text("Sign Up"),
+                          child: const Text("Don't have an account?"),
                         ),
                         FilledButton(
                           onPressed: _login,

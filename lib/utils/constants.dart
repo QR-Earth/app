@@ -4,7 +4,8 @@ class SharedPrefKeys {
 }
 
 class AppConfig {
-  static const serverBaseUrl = "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
+  static const serverBaseUrl =
+      "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
 }
 
 class ApiRoutes {
@@ -14,6 +15,7 @@ class ApiRoutes {
   static const userTransactions = "/users/transactions";
 
   static const leaderboard = "/public/leaderboard";
+  static const totalUsers = "/public/total_users";
 
   static const codeRedeem = "/codes/redeem";
   static const codeValidate = "/codes/validate";

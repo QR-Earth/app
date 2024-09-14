@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:qr_earth/home/widgets/safe_padding.dart';
 import 'package:qr_earth/models/user.dart';
+import 'package:qr_earth/utils/colors.dart';
 import 'package:qr_earth/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:qr_earth/utils/global.dart';
 
 class LeaderboardPage extends StatefulWidget {
   const LeaderboardPage({super.key});
@@ -14,10 +16,13 @@ class LeaderboardPage extends StatefulWidget {
 }
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
+  int totalUsers = 0;
+
   @override
   void initState() {
     super.initState();
-    fetchLeaderboard();
+    _fetchLeaderboard();
+    _fetchTotalUsers();
   }
 
   @override
@@ -49,20 +54,30 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             const ListTile(
               leading: Text('Rank'),
               title: Text('Username'),
-              trailing: Text('Points'),
+              trailing: Text('Recycled'),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: leaderboardList.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      leading: Text((index + 1).toString()),
-                      title: Text(leaderboardList[index].username),
-                      trailing: Text(leaderboardList[index].points.toString()),
-                    ),
-                  );
-                },
+              child: RefreshIndicator.adaptive(
+                onRefresh: _fetchLeaderboard,
+                child: ListView.builder(
+                  itemCount: leaderboardList.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      elevation: 0,
+                      color: (leaderboardList[index].username ==
+                              Global.user.username)
+                          ? keyColor.withOpacity(0.5)
+                          : null,
+                      child: ListTile(
+                        leading: Text('${index + 1} / $totalUsers'),
+                        title: Text(leaderboardList[index].username),
+                        trailing: Text(leaderboardList[index]
+                            .redeemedCodeCount
+                            .toString()),
+                      ),
+                    );
+                  },
+                ),
               ),
             )
           ],
@@ -72,19 +87,27 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   }
 
   List<LeaderboardEntry> leaderboardList = [];
-  void fetchLeaderboard() async {
+  Future<void> _fetchLeaderboard() async {
     final response = await http.get(Uri.parse(
         '${AppConfig.serverBaseUrl}${ApiRoutes.leaderboard}?limit=10'));
 
     if (response.statusCode == 200) {
-      // parse the list of objects containg username and thier score
-      // and display them in a listview
       Iterable leaderboardResponse = jsonDecode(response.body);
       leaderboardList = List<LeaderboardEntry>.from(
           leaderboardResponse.map((x) => LeaderboardEntry.fromJson(x)));
       setState(() {
         leaderboardList = leaderboardList;
       });
+    }
+  }
+
+  void _fetchTotalUsers() async {
+    final response = await http
+        .get(Uri.parse('${AppConfig.serverBaseUrl}${ApiRoutes.totalUsers}'));
+    print(response.body);
+    if (response.statusCode == 200) {
+      totalUsers = int.parse(response.body);
+      setState(() {});
     }
   }
 }
