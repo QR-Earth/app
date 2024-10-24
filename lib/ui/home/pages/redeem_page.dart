@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qr_earth/home/widgets/safe_padding.dart';
+import 'package:qr_earth/ui/home/widgets/safe_padding.dart';
 import 'package:qr_earth/utils/global.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screen_brightness/screen_brightness.dart';

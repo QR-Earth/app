@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:qr_earth/home/widgets/safe_padding.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:qr_earth/handlers/handle_logout.dart';
+import 'package:qr_earth/ui/home/widgets/safe_padding.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -45,14 +44,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: const Text("Log out"),
                   content: const Text("Are you sure you want to log out?"),
                   actions: [
-                    TextButton(
-                      onPressed: () async {
-                        // logout
-                        var sharedpref = await SharedPreferences.getInstance();
-                        sharedpref.clear();
-                        context.goNamed("login");
-                      },
-                      child: const Text("Yes"),
+                    const TextButton(
+                      onPressed: handleLogout,
+                      child: Text("Yes"),
                     ),
                     TextButton(
                       onPressed: () {

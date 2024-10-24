@@ -1,14 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:qr_earth/home/widgets/safe_padding.dart';
+import 'package:qr_earth/ui/home/widgets/safe_padding.dart';
+import 'package:qr_earth/network/api_client.dart';
 import 'package:qr_earth/utils/colors.dart';
-import 'package:qr_earth/utils/constants.dart';
 import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -70,11 +68,28 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 10.0),
                       Text(
-                        Global.user.username,
+                        "@${Global.user.username}",
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           letterSpacing: 2.0,
                           fontSize: 28.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 30.0),
+                      const Text(
+                        'NAME',
+                        style: TextStyle(
+                          letterSpacing: 2.0,
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Text(
+                        Global.user.fullName,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          letterSpacing: 2.0,
+                          fontSize: 20.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -120,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                           FilledButton.icon(
                             onPressed: () async {
                               if (Global.user.points > 100) {
-                                context.pushNamed('redeem');
+                                context.goNamed('redeem');
                               } else {
                                 await HapticFeedback.selectionClick();
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -148,19 +163,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _refreshUser() async {
-    var response = await http.get(
-      Uri.parse(
-          "${AppConfig.serverBaseUrl}${ApiRoutes.userInfo}?user_id=${Global.user.id}"),
-    );
+    // var response = await http.get(
+    //   Uri.parse(
+    //       "${AppConfig.serverBaseUrl}${ApiRoutes.userInfo}?user_id=${Global.user.id}"),
+    // );
+
+    final response = await ApiClient.userInfo();
 
     if (response.statusCode == HttpStatus.ok) {
-      Global.user.setFromJson(jsonDecode(response.body));
+      Global.user.setFromJson(response.data);
       setState(() {});
-    } else {
+    } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              "Unhandled Exception: ${response.statusCode} - ${response.body}"),
+              "Unhandled Exception: ${response.statusCode} - ${response.data}"),
         ),
       );
     }

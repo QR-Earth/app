@@ -1,11 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:qr_earth/home/widgets/safe_padding.dart';
-
+import 'package:qr_earth/ui/home/widgets/safe_padding.dart';
 import 'package:qr_earth/models/user.dart';
-import 'package:qr_earth/utils/constants.dart';
-import 'package:qr_earth/utils/global.dart';
+import 'package:qr_earth/network/api_client.dart';
 import 'package:flutter/material.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -84,13 +80,18 @@ class _HistoryPageState extends State<HistoryPage> {
   List<UserTransactions> historyList = [];
 
   Future<void> fetchHistory() async {
-    final response = await http.get(Uri.parse(
-        '${AppConfig.serverBaseUrl}${ApiRoutes.userTransactions}?user_id=${Global.user.id}&qunatiy=10'));
+    // final response = await http.get(Uri.parse(
+    //     '${AppConfig.serverBaseUrl}${ApiRoutes.userTransactions}?user_id=${Global.user.id}&qunatiy=10'));
+
+    final response = await ApiClient.userTransactions(quantity: 10);
 
     if (response.statusCode == HttpStatus.ok) {
-      Iterable userHistoryResponse = jsonDecode(response.body);
+      Iterable userHistoryResponse = response.data;
+
       historyList = List<UserTransactions>.from(
-          userHistoryResponse.map((x) => UserTransactions.fromJson(x)));
+        userHistoryResponse.map((x) => UserTransactions.fromJson(x)),
+      );
+
       setState(() {
         historyList = historyList;
       });

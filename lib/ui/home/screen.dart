@@ -22,6 +22,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Theme.of(context).colorScheme.surface,
+          statusBarBrightness: Theme.of(context).brightness,
           systemNavigationBarColor: Theme.of(context).colorScheme.surface,
         ),
         toolbarHeight: 0,

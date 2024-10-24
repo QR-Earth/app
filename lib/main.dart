@@ -1,9 +1,11 @@
+import 'package:qr_earth/network/api_client.dart';
 import 'package:qr_earth/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_earth/utils/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ApiClient.init();
   runApp(const MyApp());
 }
 

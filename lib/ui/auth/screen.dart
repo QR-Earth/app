@@ -16,6 +16,8 @@ class AuthScreen extends StatelessWidget {
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle(
           systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+          statusBarBrightness: Theme.of(context).brightness,
+          statusBarColor: Theme.of(context).colorScheme.surface,
         ),
         toolbarHeight: 0,
       ),

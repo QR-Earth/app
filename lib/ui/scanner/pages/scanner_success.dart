@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:qr_earth/utils/constants.dart';
+import 'package:qr_earth/network/api_client.dart';
+import 'package:qr_earth/router/router.dart';
 import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 
 class ScannerSuccessPage extends StatefulWidget {
   const ScannerSuccessPage({super.key});
@@ -43,13 +42,15 @@ class _ScannerSuccessPageState extends State<ScannerSuccessPage> {
   }
 
   void _goMain() async {
-    final response = await http.get(Uri.parse(
-        '${AppConfig.serverBaseUrl}${ApiRoutes.userInfo}?user_id=${Global.user.id}'));
+    // final response = await http.get(Uri.parse(
+    //     '${AppConfig.serverBaseUrl}${ApiRoutes.userInfo}?user_id=${Global.user.id}'));
+
+    final response = await ApiClient.userInfo();
+
     if (response.statusCode == HttpStatus.ok) {
-      // success
-      Global.user.setFromJson(jsonDecode(response.body));
+      Global.user.setFromJson(jsonDecode(response.data));
     }
-    if (!context.mounted) return;
-    context.goNamed('home');
+
+    appRouter.goNamed('home');
   }
 }

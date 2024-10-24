@@ -1,17 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:qr_earth/utils/constants.dart';
+import 'package:qr_earth/handlers/handle_login.dart';
+import 'package:qr_earth/network/api_client.dart';
 import 'package:qr_earth/utils/extensions.dart';
-import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   final String? username;
-  const LoginPage({super.key, this.username});
+  final String? message;
+  const LoginPage({super.key, this.username, this.message});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -31,6 +29,9 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _usernameController.text = widget.username ?? "";
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showSnackBar();
+    });
   }
 
   @override
@@ -76,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                       decoration: const InputDecoration(
                         labelText: "Username or Email",
                         hintText: "Enter your username or email",
-                        prefixIcon: Icon(Icons.person),
+                        prefixIcon: Icon(Icons.alternate_email_rounded),
                       ),
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -171,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
     _userNotFound = false;
 
     // trim
-    _usernameController.text = _usernameController.text.trim();
+    _usernameController.text = _usernameController.text.trim().toLowerCase();
     _passwordController.text = _passwordController.text.trim();
 
     if (_loginFormKey.currentState!.validate()) {
@@ -181,59 +182,80 @@ class _LoginPageState extends State<LoginPage> {
 
       bool isEmail = _usernameController.text.isValidEmail;
 
-      final response = await http.post(
-        Uri.parse("${AppConfig.serverBaseUrl}${ApiRoutes.login}"),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: jsonEncode({
-          "username": !isEmail ? _usernameController.text : "",
-          "email": isEmail ? _usernameController.text : "",
-          "phone_number": "",
-          "password": _passwordController.text,
-        }),
+      // final response = await http.post(
+      //   Uri.parse("${AppConfig.serverBaseUrl}${ApiRoutes.login}"),
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Accept": "application/json",
+      //   },
+      //   body: jsonEncode({
+      //     "username": !isEmail ? _usernameController.text : "",
+      //     "email": isEmail ? _usernameController.text : "",
+      //     "phone_number": "",
+      //     "password": _passwordController.text,
+      //   }),
+      // );
+
+      final response = await ApiClient.login(
+        username: !isEmail ? _usernameController.text : "",
+        email: isEmail ? _usernameController.text : "",
+        phoneNumber: "",
+        password: _passwordController.text,
       );
 
-      if (response.statusCode == HttpStatus.ok) {
-        return _loginSuccess(response.body);
-      } else if (response.statusCode == HttpStatus.notFound) {
-        // User not found
-        setState(() {
-          _userNotFound = true;
-          _isLoading = false;
-        });
-      } else if (response.statusCode == HttpStatus.unauthorized) {
-        // Wrong password
-        setState(() {
-          _wrongPassword = true;
-          _isLoading = false;
-        });
-      } else {
-        // Something went wrong
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                "Unhandled Exception: ${response.statusCode} - ${response.body}"),
-          ),
-        );
+      switch (response.statusCode) {
+        case HttpStatus.ok:
+          return handleLogin(response.data);
+        case HttpStatus.notFound:
+          // User not found
+          setState(() {
+            _userNotFound = true;
+            _isLoading = false;
+          });
+          break;
+        case HttpStatus.unauthorized:
+          // Wrong password
+          setState(() {
+            _wrongPassword = true;
+            _isLoading = false;
+          });
+          break;
+        default:
+          // Something went wrong
+          setState(() {
+            _isLoading = false;
+          });
+        // ScaffoldMessenger.of(context).clearSnackBars();
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(
+        //       "Unhandled Exception: ${response.statusCode} - ${response.data}",
+        //     ),
+        //   ),
+        // );
       }
 
       _loginFormKey.currentState!.validate();
     }
   }
 
-  void _loginSuccess(String body) async {
-    Global.user.setFromJson(jsonDecode(body));
-
-    var sharedpref = await SharedPreferences.getInstance();
-    await sharedpref.setBool(SharedPrefKeys.isLoggedIn, true);
-    await sharedpref.setString(SharedPrefKeys.userData, body);
-
-    context.goNamed("home");
+  void showSnackBar() {
+    if (widget.message != null && widget.message!.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.message!),
+        ),
+      );
+    }
   }
+
+  // void _loginSuccess(String body) async {
+  //   Global.user.setFromJson(jsonDecode(body));
+
+  //   var sharedpref = await SharedPreferences.getInstance();
+  //   await sharedpref.setBool(SharedPrefKeys.isLoggedIn, true);
+  //   await sharedpref.setString(SharedPrefKeys.userData, body);
+
+  //   context.goNamed("home");
+  // }
 }

@@ -1,9 +1,9 @@
-import 'package:qr_earth/home/pages/history_page.dart';
-import 'package:qr_earth/home/pages/home_page.dart';
-import 'package:qr_earth/home/pages/leaderboard_page.dart';
-import 'package:qr_earth/home/pages/redeem_page.dart';
-import 'package:qr_earth/home/pages/settings_page.dart';
-import 'package:qr_earth/home/screen.dart';
+import 'package:qr_earth/ui/home/pages/history_page.dart';
+import 'package:qr_earth/ui/home/pages/home_page.dart';
+import 'package:qr_earth/ui/home/pages/leaderboard_page.dart';
+import 'package:qr_earth/ui/home/pages/redeem_page.dart';
+import 'package:qr_earth/ui/home/pages/settings_page.dart';
+import 'package:qr_earth/ui/home/screen.dart';
 import 'package:go_router/go_router.dart';
 
 StatefulShellRoute homeRoute = StatefulShellRoute.indexedStack(

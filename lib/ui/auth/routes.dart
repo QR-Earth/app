@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:qr_earth/auth/pages/log_in_page.dart';
-import 'package:qr_earth/auth/pages/sign_up_page.dart';
-import 'package:qr_earth/auth/screen.dart';
+import 'package:qr_earth/ui/auth/pages/log_in_page.dart';
+import 'package:qr_earth/ui/auth/pages/sign_up_page.dart';
+import 'package:qr_earth/ui/auth/screen.dart';
 import 'package:go_router/go_router.dart';
 
 StatefulShellRoute authRoute = StatefulShellRoute.indexedStack(
@@ -19,6 +19,7 @@ StatefulShellRoute authRoute = StatefulShellRoute.indexedStack(
             child: LoginPage(
               key: UniqueKey(),
               username: state.uri.queryParameters['username'],
+              message: state.uri.queryParameters['message'],
             ),
           ),
         ),

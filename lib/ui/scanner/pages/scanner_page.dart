@@ -1,15 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:qr_earth/scanner/widgets/scanner_overlay.dart';
+import 'package:qr_earth/network/api_client.dart';
+import 'package:qr_earth/router/router.dart';
+import 'package:qr_earth/ui/scanner/widgets/scanner_overlay.dart';
 import 'package:qr_earth/utils/colors.dart';
-import 'package:qr_earth/utils/constants.dart';
-import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
-import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 
 class ScannerPage extends StatefulWidget {
@@ -115,30 +112,6 @@ class _ScannerPageState extends State<ScannerPage> {
     );
   }
 
-  Future<bool> _checkFixedQR(String code) async {
-    final response = await http.get(Uri.parse(
-        '${AppConfig.serverBaseUrl}${ApiRoutes.codeCheckFixed}?fixed_code_id=$code'));
-    if (response.statusCode == HttpStatus.ok) {
-      return true;
-    }
-    return false;
-  }
-
-  Future<http.Response> _checkVariableQR(String code) async {
-    final response = await http.post(
-      Uri.parse('${AppConfig.serverBaseUrl}${ApiRoutes.codeRedeem}'),
-      headers: {
-        'accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'code_id': code,
-        'user_id': Global.user.id,
-      }),
-    );
-    return response;
-  }
-
   String? _fixedCode;
 
   void detect(BarcodeCapture capture) async {
@@ -154,33 +127,47 @@ class _ScannerPageState extends State<ScannerPage> {
       debugPrint('Barcode found! $code');
 
       if (!_fixedScanned) {
-        if (await _checkFixedQR(code)) {
-          HapticFeedback.lightImpact();
-          _fixedScanned = true;
-          _fixedCode = code;
-          setState(() => _bottomText = "🥤\nScan Bottle QR");
-        } else {
-          HapticFeedback.lightImpact();
-          setState(() => _bottomText = "❌\nInvalid Bin QR");
-          await Future.delayed(const Duration(seconds: 2));
-          setState(() => _bottomText = "🗑️\nScan Bin QR");
+        final response = await ApiClient.codeCheckFixed(fixedCodeId: code);
+        switch (response.statusCode) {
+          case HttpStatus.ok:
+            HapticFeedback.lightImpact();
+            _fixedScanned = true;
+            _fixedCode = code;
+            setState(() => _bottomText = "🥤\nScan Bottle QR");
+            break;
+          default:
+            HapticFeedback.lightImpact();
+            setState(() => _bottomText = "❌\nInvalid Bin QR");
+            await Future.delayed(const Duration(seconds: 2));
+            setState(() => _bottomText = "🗑️\nScan Bin QR");
+            break;
         }
       } else {
-        final response = await _checkVariableQR(code);
-        if (response.statusCode == HttpStatus.ok) {
-          HapticFeedback.lightImpact();
-          if (!context.mounted) return;
-          context.goNamed("scanner_success");
-        } else if (response.statusCode == HttpStatus.notFound) {
-          HapticFeedback.lightImpact();
-          setState(() => _bottomText = "❌\nInvalid Bottle QR");
-          await Future.delayed(const Duration(seconds: 2));
-          setState(() => _bottomText = "🥤\nScan Bottle QR");
-        } else if (response.statusCode == HttpStatus.badRequest) {
-          HapticFeedback.lightImpact();
-          setState(() => _bottomText = "❌\nAlready Redeemed");
-          await Future.delayed(const Duration(seconds: 2));
-          setState(() => _bottomText = "🥤\nScan Bottle QR");
+        final response = await ApiClient.codeRedeem(code: code);
+
+        switch (response.statusCode) {
+          case HttpStatus.ok:
+            HapticFeedback.lightImpact();
+            appRouter.goNamed("scanner_success");
+            break;
+          case HttpStatus.notFound:
+            HapticFeedback.lightImpact();
+            setState(() => _bottomText = "❌\nInvalid Bottle QR");
+            await Future.delayed(const Duration(seconds: 2));
+            setState(() => _bottomText = "🥤\nScan Bottle QR");
+            break;
+          case HttpStatus.badRequest:
+            HapticFeedback.lightImpact();
+            setState(() => _bottomText = "❌\nCode is Already Redeemed");
+            await Future.delayed(const Duration(seconds: 2));
+            setState(() => _bottomText = "🥤\nScan Bottle QR");
+            break;
+          default:
+            HapticFeedback.lightImpact();
+            setState(() => _bottomText = "❌\nUnknown Error");
+            await Future.delayed(const Duration(seconds: 2));
+            setState(() => _bottomText = "🥤\nScan Bottle QR");
+            break;
         }
       }
 

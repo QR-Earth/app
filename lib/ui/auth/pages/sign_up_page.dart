@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:qr_earth/utils/constants.dart';
+
+import 'package:qr_earth/network/api_client.dart';
 import 'package:qr_earth/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -17,12 +16,12 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confrimPasswordController =
-      TextEditingController();
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confrimPasswordController = TextEditingController();
+  final _fullNameController = TextEditingController();
 
   final _signUpFormKey = GlobalKey<FormState>();
 
@@ -87,7 +86,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         decoration: const InputDecoration(
                           labelText: "Username",
                           hintText: "Enter your username (no spaces)",
-                          prefixIcon: Icon(Icons.person),
+                          prefixIcon: Icon(Icons.alternate_email_rounded),
                         ),
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -106,6 +105,22 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _fullNameController,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          labelText: "Full Name",
+                          hintText: "Enter your full name",
+                          prefixIcon: Icon(Icons.person),
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please Enter Your Full Name';
+                          }
+                          return null;
+                        },
+                      ),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _emailController,
@@ -118,15 +133,13 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                         validator: (value) {
-                          if (value!.isEmpty) {
-                            if (_phoneController.text.isEmpty) {
-                              return 'Both Email and Phone cannot be empty';
-                            }
-                          } else {
-                            if (!value.isValidEmail) {
-                              return 'Please Enter Valid Email';
-                            }
+                          if (value!.isEmpty && _phoneController.text.isEmpty) {
+                            return 'Both Email and Phone cannot be empty';
                           }
+                          if (!value.isValidEmail) {
+                            return 'Please Enter Valid Email';
+                          }
+
                           if (_emailAlreadyRegistered) {
                             _emailAlreadyRegistered = false;
                             return 'Email already registered';
@@ -151,17 +164,14 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                         validator: (value) {
-                          if (value!.isEmpty) {
-                            if (_emailController.text.isEmpty) {
-                              return 'Both Email and Phone cannot be empty';
-                            }
-                          } else {
-                            if (value.length != 10) {
-                              return 'Phone Number must be 10 characters long';
-                            }
-                            if (!value.isValidPhone) {
-                              return 'Please Enter Valid Phone Number';
-                            }
+                          if (value!.isEmpty && _emailController.text.isEmpty) {
+                            return 'Both Email and Phone cannot be empty';
+                          }
+                          if (value.length != 10) {
+                            return 'Phone Number must be 10 characters long';
+                          }
+                          if (!value.isValidPhone) {
+                            return 'Please Enter Valid Phone Number';
                           }
                           if (_phoneAlreadyRegistered) {
                             _phoneAlreadyRegistered = false;
@@ -201,6 +211,14 @@ class _SignUpPageState extends State<SignUpPage> {
                           if (value.length < 6) {
                             return 'Password must be at least 6 characters long';
                           }
+                          if (!value.isValidPassword) {
+                            return """
+Password must contain at least:
+  - one upper case letter
+  - one lower case letter
+  - one number
+  - one special character""";
+                          }
                           return null;
                         },
                       ),
@@ -229,10 +247,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                         validator: (value) {
-                          if (value!.isEmpty) {
-                            if (_passwordController.text.isNotEmpty) {
-                              return 'Please Confirm Your Password';
-                            }
+                          if (value!.isEmpty &&
+                              _passwordController.text.isNotEmpty) {
+                            return 'Please Confirm Your Password';
                           }
                           if (value != _passwordController.text) {
                             return "Passwords don't match";
@@ -286,51 +303,51 @@ class _SignUpPageState extends State<SignUpPage> {
     FocusManager.instance.primaryFocus?.unfocus();
 
     // trim
-    _usernameController.text = _usernameController.text.trim();
+    _usernameController.text = _usernameController.text.trim().toLowerCase();
+    _fullNameController.text = _fullNameController.text.trim().toUpperCase();
+
+    _emailController.text = _emailController.text.trim().toLowerCase();
+    _phoneController.text = _phoneController.text.trim();
+
     _passwordController.text = _passwordController.text.trim();
+    _confrimPasswordController.text = _confrimPasswordController.text.trim();
 
     if (_signUpFormKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
 
-      final body = jsonEncode({
-        'username': _usernameController.text,
-        'phone_number': _phoneController.text,
-        'email': _emailController.text,
-        'password': _passwordController.text,
-      });
-
-      final response = await http.post(
-        Uri.parse("${AppConfig.serverBaseUrl}${ApiRoutes.signup}"),
-        headers: {
-          "accept": "application/json",
-          "Content-Type": "application/json",
-        },
-        body: body,
+      final response = await ApiClient.signup(
+        username: _usernameController.text,
+        email: _emailController.text,
+        phoneNumber: _phoneController.text,
+        password: _passwordController.text,
+        fullName: _fullNameController.text,
       );
 
-      if (response.statusCode == HttpStatus.created) {
-        return _signUpSuccess();
-      } else if (response.statusCode == HttpStatus.conflict) {
-        final error = response.body;
-        if (error.contains('Username')) {
-          _usernameAlreadyRegistered = true;
-        }
-        if (error.contains('Email')) {
-          _emailAlreadyRegistered = true;
-        }
-        if (error.contains('Phone')) {
-          _phoneAlreadyRegistered = true;
-        }
-      } else {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                "Unhandled Exception: ${response.statusCode} - ${response.body}"),
-          ),
-        );
+      switch (response.statusCode) {
+        case HttpStatus.created:
+          return _signUpSuccess();
+        case HttpStatus.conflict:
+          final error = response.data;
+          if (error.contains('Username')) {
+            _usernameAlreadyRegistered = true;
+          }
+          if (error.contains('Email')) {
+            _emailAlreadyRegistered = true;
+          }
+          if (error.contains('Phone')) {
+            _phoneAlreadyRegistered = true;
+          }
+          break;
+        default:
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  "Unhandled Exception: ${response.statusCode} - ${response.data}"),
+            ),
+          );
       }
 
       setState(() {
@@ -342,15 +359,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void _signUpSuccess() async {
     // save user data
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Sign Up Successful"),
-      ),
-    );
     context.pushNamed(
       "login",
       queryParameters: {
-        'username': _usernameController.text,
+        "username": _usernameController.text,
+        "messege": "Sign Up Successful, Please Login"
       },
     );
   }

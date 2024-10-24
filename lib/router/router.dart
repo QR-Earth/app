@@ -1,7 +1,7 @@
-import 'package:qr_earth/auth/routes.dart';
-import 'package:qr_earth/home/routes.dart';
-import 'package:qr_earth/scanner/routes.dart';
-import 'package:qr_earth/splash/splash_screen.dart';
+import 'package:qr_earth/ui/auth/routes.dart';
+import 'package:qr_earth/ui/home/routes.dart';
+import 'package:qr_earth/ui/scanner/routes.dart';
+import 'package:qr_earth/ui/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
