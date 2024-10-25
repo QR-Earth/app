@@ -133,11 +133,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const Spacer(),
                           FilledButton.icon(
-                            onPressed: () async {
+                            onPressed: () {
                               if (Global.user.points > 100) {
                                 context.goNamed('redeem');
                               } else {
-                                await HapticFeedback.selectionClick();
+                                HapticFeedback.selectionClick();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
@@ -163,11 +163,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _refreshUser() async {
-    // var response = await http.get(
-    //   Uri.parse(
-    //       "${AppConfig.serverBaseUrl}${ApiRoutes.userInfo}?user_id=${Global.user.id}"),
-    // );
-
     final response = await ApiClient.userInfo();
 
     if (response.statusCode == HttpStatus.ok) {

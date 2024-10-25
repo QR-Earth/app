@@ -4,6 +4,9 @@ class AppConfig {
   static const serverBaseUrl = kDebugMode
       ? "http://192.168.0.21:8000"
       : "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
+
+  // static const serverBaseUrl =
+  //     "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
 }
 
 class ApiRoutes {
@@ -13,10 +16,12 @@ class ApiRoutes {
   static const userTransactions = "/users/transactions";
   static const userRefreshAccessToken = "/users/refresh_token";
 
-  static const leaderboard = "/public/leaderboard";
+  static const leaderboard = "/public/leaderboards";
   static const totalUsers = "/public/total_users";
 
   static const codeRedeem = "/codes/redeem";
   static const codeValidate = "/codes/validate";
-  static const codeCheckFixed = "/codes/check_fixed";
+  // static const codeCheckFixed = "/codes/check_fixed";
+
+  static const binInfo = "/bins/info";
 }

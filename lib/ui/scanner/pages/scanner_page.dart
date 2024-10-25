@@ -9,6 +9,15 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/services.dart';
 
+abstract final class BottomText {
+  static const String bin = "🗑️\nScan Dustbin QR";
+  static const String bottle = "🥤\nScan Bottle QR";
+  static const String invalidBin = "❌\nInvalid Bin QR";
+  static const String invalidBottle = "❌\nInvalid Bottle QR";
+  static const String codeRedeemed = "❌\nCode is Already Redeemed";
+  static const String unknownError = "❌\nUnknown Error";
+}
+
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
 
@@ -18,8 +27,8 @@ class ScannerPage extends StatefulWidget {
 
 class _ScannerPageState extends State<ScannerPage> {
   bool _isLoading = false;
-  String _bottomText = "🗑️\nScan Dustbin QR";
-  bool _fixedScanned = false;
+  String _bottomText = BottomText.bin;
+  bool _binScanned = false;
   final MobileScannerController _cameraController = MobileScannerController();
 
   @override
@@ -112,7 +121,7 @@ class _ScannerPageState extends State<ScannerPage> {
     );
   }
 
-  String? _fixedCode;
+  String? _binCode;
 
   void detect(BarcodeCapture capture) async {
     if (_isLoading) return;
@@ -121,52 +130,67 @@ class _ScannerPageState extends State<ScannerPage> {
 
     if (barcodes.isNotEmpty) {
       final code = barcodes.first.rawValue!;
-      if (_fixedScanned && code == _fixedCode) return;
+      if (_binScanned && code == _binCode) return;
 
       setState(() => _isLoading = true);
       debugPrint('Barcode found! $code');
 
-      if (!_fixedScanned) {
-        final response = await ApiClient.codeCheckFixed(fixedCodeId: code);
+      if (!_binScanned) {
+        final response = await ApiClient.binInfo(binId: code);
         switch (response.statusCode) {
           case HttpStatus.ok:
-            HapticFeedback.lightImpact();
-            _fixedScanned = true;
-            _fixedCode = code;
-            setState(() => _bottomText = "🥤\nScan Bottle QR");
+            {
+              HapticFeedback.lightImpact();
+              _binScanned = true;
+              _binCode = code;
+              setState(() => _bottomText = BottomText.bottle);
+            }
             break;
           default:
-            HapticFeedback.lightImpact();
-            setState(() => _bottomText = "❌\nInvalid Bin QR");
-            await Future.delayed(const Duration(seconds: 2));
-            setState(() => _bottomText = "🗑️\nScan Bin QR");
+            {
+              HapticFeedback.lightImpact();
+              setState(() => _bottomText = BottomText.invalidBin);
+              await Future.delayed(const Duration(seconds: 2));
+              setState(() => _bottomText = BottomText.bin);
+            }
             break;
         }
       } else {
-        final response = await ApiClient.codeRedeem(code: code);
+        final response = await ApiClient.codeRedeem(
+          code: code,
+          binId: _binCode!,
+        );
 
         switch (response.statusCode) {
           case HttpStatus.ok:
-            HapticFeedback.lightImpact();
-            appRouter.goNamed("scanner_success");
+            {
+              HapticFeedback.lightImpact();
+              appRouter.goNamed("scanner_success");
+            }
             break;
           case HttpStatus.notFound:
-            HapticFeedback.lightImpact();
-            setState(() => _bottomText = "❌\nInvalid Bottle QR");
-            await Future.delayed(const Duration(seconds: 2));
-            setState(() => _bottomText = "🥤\nScan Bottle QR");
+            {
+              HapticFeedback.lightImpact();
+              setState(() => _bottomText = BottomText.invalidBottle);
+              await Future.delayed(const Duration(seconds: 2));
+              setState(() => _bottomText = BottomText.bottle);
+            }
             break;
           case HttpStatus.badRequest:
-            HapticFeedback.lightImpact();
-            setState(() => _bottomText = "❌\nCode is Already Redeemed");
-            await Future.delayed(const Duration(seconds: 2));
-            setState(() => _bottomText = "🥤\nScan Bottle QR");
+            {
+              HapticFeedback.lightImpact();
+              setState(() => _bottomText = BottomText.codeRedeemed);
+              await Future.delayed(const Duration(seconds: 2));
+              setState(() => _bottomText = BottomText.bottle);
+            }
             break;
           default:
-            HapticFeedback.lightImpact();
-            setState(() => _bottomText = "❌\nUnknown Error");
-            await Future.delayed(const Duration(seconds: 2));
-            setState(() => _bottomText = "🥤\nScan Bottle QR");
+            {
+              HapticFeedback.lightImpact();
+              setState(() => _bottomText = BottomText.unknownError);
+              await Future.delayed(const Duration(seconds: 2));
+              setState(() => _bottomText = BottomText.bottle);
+            }
             break;
         }
       }

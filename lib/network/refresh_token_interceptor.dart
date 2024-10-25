@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:qr_earth/handlers/handle_logout.dart';
-import 'package:qr_earth/network/routes.dart';
+import 'package:qr_earth/network/api_routes.dart';
 import 'package:qr_earth/network/session.dart';
 
 class FailedRequest {

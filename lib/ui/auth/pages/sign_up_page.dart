@@ -327,27 +327,33 @@ Password must contain at least:
 
       switch (response.statusCode) {
         case HttpStatus.created:
-          return _signUpSuccess();
+          {
+            return _signUpSuccess();
+          }
         case HttpStatus.conflict:
-          final error = response.data;
-          if (error.contains('Username')) {
-            _usernameAlreadyRegistered = true;
+          {
+            final error = response.data;
+            if (error.contains('Username')) {
+              _usernameAlreadyRegistered = true;
+            }
+            if (error.contains('Email')) {
+              _emailAlreadyRegistered = true;
+            }
+            if (error.contains('Phone')) {
+              _phoneAlreadyRegistered = true;
+            }
+            break;
           }
-          if (error.contains('Email')) {
-            _emailAlreadyRegistered = true;
-          }
-          if (error.contains('Phone')) {
-            _phoneAlreadyRegistered = true;
-          }
-          break;
         default:
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  "Unhandled Exception: ${response.statusCode} - ${response.data}"),
-            ),
-          );
+          {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    "Unhandled Exception: ${response.statusCode} - ${response.data}"),
+              ),
+            );
+          }
       }
 
       setState(() {

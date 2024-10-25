@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:qr_earth/ui/home/widgets/safe_padding.dart';
 import 'package:qr_earth/models/user.dart';
 import 'package:qr_earth/network/api_client.dart';
@@ -12,10 +13,16 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
+  static const _pageSize = 10;
+  final PagingController<int, UserTransactions> _pagingController =
+      PagingController(firstPageKey: 1);
+
   @override
   void initState() {
     super.initState();
-    fetchHistory();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchHistory(pageKey);
+    });
   }
 
   @override
@@ -47,27 +54,21 @@ class _HistoryPageState extends State<HistoryPage> {
               trailing: Text('Points'),
             ),
             Expanded(
-              child: RefreshIndicator.adaptive(
-                onRefresh: fetchHistory,
-                child: ListView.builder(
-                  itemCount: historyList.length,
-                  itemBuilder: (context, index) {
-                    var timeStamp =
-                        DateTime.parse(historyList[index].timestamp);
-                    var amount = historyList[index].amount;
-
-                    return ListTile(
-                      leading: Text((index + 1).toString()),
-                      title: Text(
-                        "On ${timeStamp.day}/${timeStamp.month}/${timeStamp.year} at ${timeStamp.hour}:${timeStamp.minute}",
+              child: PagedListView<int, UserTransactions>(
+                pagingController: _pagingController,
+                builderDelegate: PagedChildBuilderDelegate<UserTransactions>(
+                  itemBuilder: (context, item, index) => ListTile(
+                    leading: Text((index + 1).toString()),
+                    title: Text(
+                      "On ${item.timeStamp.day}/${item.timeStamp.month}/${item.timeStamp.year} at ${item.timeStamp.hour}:${item.timeStamp.minute}",
+                    ),
+                    trailing: Text(
+                      item.amount.toString(),
+                      style: TextStyle(
+                        color: item.amount > 0 ? Colors.green : Colors.red,
                       ),
-                      trailing: Text(
-                        amount.toString(),
-                        style: TextStyle(
-                            color: amount > 0 ? Colors.green : Colors.red),
-                      ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
             )
@@ -77,24 +78,28 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  List<UserTransactions> historyList = [];
-
-  Future<void> fetchHistory() async {
-    // final response = await http.get(Uri.parse(
-    //     '${AppConfig.serverBaseUrl}${ApiRoutes.userTransactions}?user_id=${Global.user.id}&qunatiy=10'));
-
-    final response = await ApiClient.userTransactions(quantity: 10);
+  Future<void> _fetchHistory(final int pageKey) async {
+    final response = await ApiClient.userTransactions(
+      page: pageKey,
+      size: _pageSize,
+    );
 
     if (response.statusCode == HttpStatus.ok) {
-      Iterable userHistoryResponse = response.data;
+      Iterable leaderboardResponse = response.data["items"];
+      int page = response.data["page"];
+      int totalPages = response.data["pages"];
 
-      historyList = List<UserTransactions>.from(
-        userHistoryResponse.map((x) => UserTransactions.fromJson(x)),
+      List<UserTransactions> transactionsList = List<UserTransactions>.from(
+        leaderboardResponse.map((x) => UserTransactions.fromJson(x)),
       );
 
-      setState(() {
-        historyList = historyList;
-      });
+      final isLastPage = page == totalPages;
+      if (isLastPage) {
+        _pagingController.appendLastPage(transactionsList);
+      } else {
+        final nextPageKey = page + 1;
+        _pagingController.appendPage(transactionsList, nextPageKey);
+      }
     }
   }
 }

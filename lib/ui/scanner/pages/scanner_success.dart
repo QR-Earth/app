@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:go_router/go_router.dart';
 import 'package:qr_earth/network/api_client.dart';
-import 'package:qr_earth/router/router.dart';
 import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
 
@@ -42,15 +42,14 @@ class _ScannerSuccessPageState extends State<ScannerSuccessPage> {
   }
 
   void _goMain() async {
-    // final response = await http.get(Uri.parse(
-    //     '${AppConfig.serverBaseUrl}${ApiRoutes.userInfo}?user_id=${Global.user.id}'));
-
     final response = await ApiClient.userInfo();
 
     if (response.statusCode == HttpStatus.ok) {
       Global.user.setFromJson(jsonDecode(response.data));
     }
 
-    appRouter.goNamed('home');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.goNamed('home');
+    });
   }
 }

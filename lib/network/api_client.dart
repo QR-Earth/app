@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:qr_earth/network/api_factory.dart';
-import 'package:qr_earth/network/routes.dart';
-import 'package:qr_earth/utils/global.dart';
+import 'package:qr_earth/network/api_routes.dart';
 
 ///ApiClient class is a wrapper for the ApiFactory class.
 ///
@@ -59,27 +58,29 @@ class ApiClient {
     );
   }
 
-  static Future<Response> userTransactions({
-    required int quantity,
-  }) {
+  static Future<Response> userTransactions(
+      {required int page, required int size}) {
     return ApiFactory.get(
       ApiRoutes.userTransactions,
       auth: true,
       queryParameters: {
-        "quantity": quantity,
+        "page": page,
+        "size": size,
       },
     );
   }
 
   // public
   static Future<Response> leaderboard({
-    required int limit,
+    required int page,
+    required int size,
   }) async {
     return ApiFactory.get(
       ApiRoutes.leaderboard,
       auth: false,
       queryParameters: {
-        "limit": limit,
+        "page": page,
+        "size": size,
       },
     );
   }
@@ -92,27 +93,29 @@ class ApiClient {
   }
 
   // codes
-  static Future<Response> codeCheckFixed({
-    required String fixedCodeId,
+  static Future<Response> codeRedeem({
+    required String code,
+    required String binId,
   }) async {
-    return ApiFactory.get(
-      ApiRoutes.codeCheckFixed,
-      auth: false,
-      queryParameters: {
-        "fixed_code_id": fixedCodeId,
+    return ApiFactory.post(
+      ApiRoutes.codeRedeem,
+      auth: true,
+      data: {
+        "code_id": code,
+        "bin_id": binId,
       },
     );
   }
 
-  static Future<Response> codeRedeem({
-    required String code,
+  // bins
+  static Future<Response> binInfo({
+    required String binId,
   }) async {
-    return ApiFactory.post(
-      ApiRoutes.codeRedeem,
+    return ApiFactory.get(
+      ApiRoutes.binInfo,
       auth: false,
-      data: {
-        "code_id": code,
-        "user_id": Global.user.id,
+      queryParameters: {
+        "bin_id": binId,
       },
     );
   }

@@ -45,13 +45,13 @@ class LeaderboardEntry {
 
 class UserTransactions {
   late String id;
-  late String timestamp;
+  late DateTime timeStamp;
   late int amount;
 
   static fromJson(Map<String, dynamic> json) {
     UserTransactions ut = UserTransactions();
     ut.id = json['id'];
-    ut.timestamp = json['timestamp'];
+    ut.timeStamp = DateTime.parse(json['timestamp']);
     ut.amount = json['amount'];
     return ut;
   }

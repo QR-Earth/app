@@ -11,7 +11,7 @@ GoRoute scannerRoute = GoRoute(
   routes: [
     GoRoute(
       name: "scanner_success",
-      path: "/hone/success",
+      path: "/home/success",
       pageBuilder: (context, state) => const NoTransitionPage(
         child: ScannerSuccessPage(),
       ),

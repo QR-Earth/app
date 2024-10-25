@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:qr_earth/ui/home/widgets/safe_padding.dart';
 import 'package:qr_earth/models/user.dart';
 import 'package:qr_earth/network/api_client.dart';
@@ -16,12 +17,18 @@ class LeaderboardPage extends StatefulWidget {
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
   int totalUsers = 0;
+  static const _pageSize = 10;
+
+  final PagingController<int, LeaderboardEntry> _pagingController =
+      PagingController(firstPageKey: 1);
 
   @override
   void initState() {
     super.initState();
-    _fetchLeaderboard();
     _fetchTotalUsers();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchLeaderboard(pageKey);
+    });
   }
 
   @override
@@ -56,26 +63,20 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               trailing: Text('Recycled'),
             ),
             Expanded(
-              child: RefreshIndicator.adaptive(
-                onRefresh: _fetchLeaderboard,
-                child: ListView.builder(
-                  itemCount: leaderboardList.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      elevation: 0,
-                      color: (leaderboardList[index].username ==
-                              Global.user.username)
-                          ? keyColor.withOpacity(0.5)
-                          : null,
-                      child: ListTile(
-                        leading: Text('${index + 1} / $totalUsers'),
-                        title: Text('@${leaderboardList[index].username}'),
-                        trailing: Text(leaderboardList[index]
-                            .redeemedCodeCount
-                            .toString()),
-                      ),
-                    );
-                  },
+              child: PagedListView<int, LeaderboardEntry>(
+                pagingController: _pagingController,
+                builderDelegate: PagedChildBuilderDelegate(
+                  itemBuilder: (context, item, index) => Card(
+                    elevation: 0,
+                    color: (item.username == Global.user.username)
+                        ? keyColor.withOpacity(0.5)
+                        : null,
+                    child: ListTile(
+                      leading: Text('${index + 1} / $totalUsers'),
+                      title: Text('@${item.username}'),
+                      trailing: Text(item.redeemedCodeCount.toString()),
+                    ),
+                  ),
                 ),
               ),
             )
@@ -85,28 +86,32 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     );
   }
 
-  List<LeaderboardEntry> leaderboardList = [];
-  Future<void> _fetchLeaderboard() async {
-    // final response = await http.get(Uri.parse(
-    //     '${AppConfig.serverBaseUrl}${ApiRoutes.leaderboard}?limit=10'));
-    final response = await ApiClient.leaderboard(limit: 10);
+  Future<void> _fetchLeaderboard(final int pageKey) async {
+    final response = await ApiClient.leaderboard(
+      page: pageKey,
+      size: _pageSize,
+    );
 
     if (response.statusCode == HttpStatus.ok) {
-      Iterable leaderboardResponse = response.data;
+      Iterable leaderboardResponse = response.data["items"];
+      int page = response.data["page"];
+      int totalPages = response.data["pages"];
 
-      leaderboardList = List<LeaderboardEntry>.from(
+      List<LeaderboardEntry> leaderboardList = List<LeaderboardEntry>.from(
         leaderboardResponse.map((x) => LeaderboardEntry.fromJson(x)),
       );
 
-      setState(() {
-        leaderboardList = leaderboardList;
-      });
+      final isLastPage = page == totalPages;
+      if (isLastPage) {
+        _pagingController.appendLastPage(leaderboardList);
+      } else {
+        final nextPageKey = page + 1;
+        _pagingController.appendPage(leaderboardList, nextPageKey);
+      }
     }
   }
 
   void _fetchTotalUsers() async {
-    // final response = await http
-    //     .get(Uri.parse('${AppConfig.serverBaseUrl}${ApiRoutes.totalUsers}'));
     final response = await ApiClient.totalUsers();
 
     if (response.statusCode == HttpStatus.ok) {

@@ -205,34 +205,34 @@ class _LoginPageState extends State<LoginPage> {
 
       switch (response.statusCode) {
         case HttpStatus.ok:
-          return handleLogin(response.data);
+          {
+            return handleLogin(response.data);
+          }
         case HttpStatus.notFound:
-          // User not found
-          setState(() {
-            _userNotFound = true;
-            _isLoading = false;
-          });
+          {
+            // User not found
+            setState(() {
+              _userNotFound = true;
+              _isLoading = false;
+            });
+          }
           break;
         case HttpStatus.unauthorized:
-          // Wrong password
-          setState(() {
-            _wrongPassword = true;
-            _isLoading = false;
-          });
+          {
+            // Wrong password
+            setState(() {
+              _wrongPassword = true;
+              _isLoading = false;
+            });
+          }
           break;
         default:
-          // Something went wrong
-          setState(() {
-            _isLoading = false;
-          });
-        // ScaffoldMessenger.of(context).clearSnackBars();
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text(
-        //       "Unhandled Exception: ${response.statusCode} - ${response.data}",
-        //     ),
-        //   ),
-        // );
+          {
+            // Something went wrong
+            setState(() {
+              _isLoading = false;
+            });
+          }
       }
 
       _loginFormKey.currentState!.validate();
