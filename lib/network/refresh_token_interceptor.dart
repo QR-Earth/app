@@ -59,6 +59,9 @@ class RefreshTokenInterceptor extends Interceptor {
     // handle refresh token
     var response = await retryDio.get(
       ApiRoutes.userRefreshAccessToken,
+      queryParameters: {
+        "access_token": Session.userAccessToken,
+      },
       options: Options(
         headers: {
           "Authorization": 'Bearer ${Session.userRefreshToken}',
