@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:qr_earth/ui/home/pages/history_page.dart';
 import 'package:qr_earth/ui/home/pages/home_page.dart';
 import 'package:qr_earth/ui/home/pages/leaderboard_page.dart';
@@ -16,14 +17,16 @@ StatefulShellRoute homeRoute = StatefulShellRoute.indexedStack(
         GoRoute(
           name: "home",
           path: "/home",
-          pageBuilder: (context, state) => const NoTransitionPage(
+          pageBuilder: (context, state) => MaterialPage<void>(
+            key: state.pageKey,
             child: HomePage(),
           ),
           routes: [
             GoRoute(
               name: "redeem",
               path: "redeem",
-              pageBuilder: (context, state) => const NoTransitionPage(
+              pageBuilder: (context, state) => MaterialPage<void>(
+                key: state.pageKey,
                 child: RedeemPage(),
               ),
             )
@@ -36,7 +39,8 @@ StatefulShellRoute homeRoute = StatefulShellRoute.indexedStack(
         GoRoute(
           name: "leaderboard",
           path: "/home/leaderboard",
-          pageBuilder: (context, state) => const NoTransitionPage(
+          pageBuilder: (context, state) => MaterialPage<void>(
+            key: state.pageKey,
             child: LeaderboardPage(),
           ),
         ),
@@ -47,7 +51,8 @@ StatefulShellRoute homeRoute = StatefulShellRoute.indexedStack(
         GoRoute(
           name: "history",
           path: "/home/history",
-          pageBuilder: (context, state) => const NoTransitionPage(
+          pageBuilder: (context, state) => MaterialPage<void>(
+            key: state.pageKey,
             child: HistoryPage(),
           ),
         ),
@@ -58,7 +63,8 @@ StatefulShellRoute homeRoute = StatefulShellRoute.indexedStack(
         GoRoute(
           name: "settings",
           path: "/home/settings",
-          pageBuilder: (context, state) => const NoTransitionPage(
+          pageBuilder: (context, state) => MaterialPage<void>(
+            key: state.pageKey,
             child: SettingsPage(),
           ),
         ),

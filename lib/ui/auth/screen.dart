@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:qr_earth/utils/colors.dart';
 
 class AuthScreen extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -12,16 +13,14 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
-          statusBarBrightness: Theme.of(context).brightness,
-          statusBarColor: Theme.of(context).colorScheme.surface,
+    return LoaderOverlay(
+      child: Scaffold(
+        appBar: AppBar(
+          systemOverlayStyle: plainSystemUiOverlayStyle(context),
+          toolbarHeight: 0,
         ),
-        toolbarHeight: 0,
+        body: navigationShell,
       ),
-      body: navigationShell,
     );
   }
 }

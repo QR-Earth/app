@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.goNamed('scanner'),
+        onPressed: () => context.pushNamed('scanner'),
         label: const Text("Scan QR"),
         icon: const Icon(Icons.qr_code_scanner_rounded),
       ),

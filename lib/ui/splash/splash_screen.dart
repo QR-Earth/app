@@ -3,9 +3,9 @@ import 'package:flutter_update_checker/flutter_update_checker.dart';
 import 'package:qr_earth/handlers/handle_logout.dart';
 import 'package:qr_earth/network/api_client.dart';
 import 'package:qr_earth/network/session.dart';
+import 'package:qr_earth/utils/colors.dart';
 import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -26,11 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
-          statusBarBrightness: Theme.of(context).brightness,
-          statusBarColor: Theme.of(context).colorScheme.surface,
-        ),
+        systemOverlayStyle: plainSystemUiOverlayStyle(context),
         toolbarHeight: 0,
       ),
       body: Center(

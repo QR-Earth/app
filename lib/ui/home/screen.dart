@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qr_earth/utils/colors.dart';
 
 class HomeScreen extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -18,51 +19,43 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AdaptiveScaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Theme.of(context).colorScheme.surface,
-          statusBarBrightness: Theme.of(context).brightness,
-          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+        systemOverlayStyle: plainSystemUiOverlayStyle(context),
+      ),
+      body: (_) => navigationShell,
+      selectedIndex: navigationShell.currentIndex,
+      destinations: const [
+        NavigationDestination(
+          label: 'Home',
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(
+            Icons.home,
+          ),
         ),
-        toolbarHeight: 0,
-      ),
-      body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.transparent,
-        selectedIndex: navigationShell.currentIndex,
-        destinations: const [
-          NavigationDestination(
-            label: 'Home',
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(
-              Icons.home,
-            ),
+        NavigationDestination(
+          label: 'Leaderboard',
+          icon: Icon(Icons.leaderboard_outlined),
+          selectedIcon: Icon(
+            Icons.leaderboard,
           ),
-          NavigationDestination(
-            label: 'Leaderboard',
-            icon: Icon(Icons.leaderboard_outlined),
-            selectedIcon: Icon(
-              Icons.leaderboard,
-            ),
+        ),
+        NavigationDestination(
+          label: 'History',
+          icon: Icon(Icons.history_outlined),
+          selectedIcon: Icon(
+            Icons.history,
           ),
-          NavigationDestination(
-            label: 'History',
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(
-              Icons.history,
-            ),
+        ),
+        NavigationDestination(
+          label: 'Settings',
+          icon: Icon(Icons.settings_outlined),
+          selectedIcon: Icon(
+            Icons.settings,
           ),
-          NavigationDestination(
-            label: 'Settings',
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(
-              Icons.settings,
-            ),
-          ),
-        ],
-        onDestinationSelected: _goBranch,
-      ),
+        ),
+      ],
+      onSelectedIndexChange: _goBranch,
     );
   }
 }

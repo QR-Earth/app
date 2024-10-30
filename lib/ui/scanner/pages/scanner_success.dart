@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:go_router/go_router.dart';
 import 'package:qr_earth/network/api_client.dart';
+import 'package:qr_earth/utils/colors.dart';
 import 'package:qr_earth/utils/global.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +24,10 @@ class _ScannerSuccessPageState extends State<ScannerSuccessPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        systemOverlayStyle: plainSystemUiOverlayStyle(context),
+        toolbarHeight: 0,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

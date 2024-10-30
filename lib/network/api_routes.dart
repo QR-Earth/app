@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 
 class AppConfig {
-  static const serverBaseUrl = kDebugMode
-      ? "http://192.168.0.21:8000"
-      : "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
+  // static const serverBaseUrl = kDebugMode
+  //     ? "http://192.168.0.21:8000"
+  //     : "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
 
-  // static const serverBaseUrl =
-  //     "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
+  static const serverBaseUrl =
+      "https://qr-earth-bthhbwfcbxcvfrbp.eastus-01.azurewebsites.net";
 }
 
 class ApiRoutes {

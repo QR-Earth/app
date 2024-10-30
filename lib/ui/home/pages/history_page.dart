@@ -30,7 +30,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       appBar: AppBar(
         // title: Text('Home Page'),
-        title: const Text('Scan History'),
+        title: const Text('Transactions History'),
       ),
       body: SafePadding(
         child: Column(

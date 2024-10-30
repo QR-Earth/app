@@ -1,13 +1,12 @@
 import 'dart:io';
 
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:qr_earth/network/api_client.dart';
 import 'package:qr_earth/router/router.dart';
-import 'package:qr_earth/ui/scanner/widgets/scanner_overlay.dart';
-import 'package:qr_earth/utils/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/services.dart';
+import 'package:qr_earth/utils/colors.dart';
 
 abstract final class BottomText {
   static const String bin = "🗑️\nScan Dustbin QR";
@@ -33,90 +32,59 @@ class _ScannerPageState extends State<ScannerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          MobileScanner(
-            fit: BoxFit.cover,
-            controller: _cameraController,
-            onDetect: detect,
-          ),
-          if (!_isLoading)
-            Positioned.fill(
-              child: Container(
-                decoration: ShapeDecoration(
-                  shape: QrScannerOverlayShape(
-                    borderColor: keyColor,
-                    borderRadius: 10,
-                    borderLength: 10,
-                    borderWidth: 20,
-                    overlayColor: Colors.black.withOpacity(0.75),
-                    // cutOutSize: 300,
-                  ),
+    return LoaderOverlay(
+      child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () => showAdaptiveDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Help"),
+                    content: const Text(
+                      "Scan the QR code on the dustbin first, then scan the QR code on the bottle to redeem the code.",
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text("Close"),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              icon: const Icon(Icons.help_rounded),
+            ),
+          ],
+          systemOverlayStyle: plainSystemUiOverlayStyle(context),
+        ),
+        body: Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              Expanded(
+                child: MobileScanner(
+                  fit: BoxFit.contain,
+                  controller: _cameraController,
+                  onDetect: detect,
                 ),
               ),
-            ),
-          SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 20.0),
-                Row(
-                  children: [
-                    const SizedBox(width: 10.0),
-                    IconButton(
-                      onPressed: () => context.goNamed("home"),
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                      color: Colors.white,
-                    ),
-                    Expanded(child: Container()),
-                    IconButton(
-                      onPressed: () =>
-                          ScaffoldMessenger.of(context).showMaterialBanner(
-                        MaterialBanner(
-                          content: const Text(
-                              "Scan the QR code on the dustbin to start recycling"),
-                          actions: [
-                            TextButton(
-                              onPressed: () => ScaffoldMessenger.of(context)
-                                  .hideCurrentMaterialBanner(),
-                              child: const Text("Got it"),
-                            ),
-                          ],
-                        ),
-                      ),
-                      icon: const Icon(Icons.help_rounded),
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 10.0),
-                  ],
+              const SizedBox(height: 20),
+              Text(
+                _bottomText,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 24.0,
                 ),
-                Expanded(child: Container()),
-                Card(
-                  color: Colors.black.withOpacity(0.5),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      _bottomText,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24.0,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 50.0),
-              ],
-            ),
-          ),
-          if (_isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.75),
-              child: const Center(
-                child: CircularProgressIndicator(),
               ),
-            ),
-        ],
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -132,7 +100,11 @@ class _ScannerPageState extends State<ScannerPage> {
       final code = barcodes.first.rawValue!;
       if (_binScanned && code == _binCode) return;
 
-      setState(() => _isLoading = true);
+      setState(() {
+        _isLoading = true;
+        context.loaderOverlay.show();
+      });
+
       debugPrint('Barcode found! $code');
 
       if (!_binScanned) {
@@ -197,6 +169,7 @@ class _ScannerPageState extends State<ScannerPage> {
 
       setState(() {
         _isLoading = false;
+        context.loaderOverlay.hide();
       });
     }
   }
